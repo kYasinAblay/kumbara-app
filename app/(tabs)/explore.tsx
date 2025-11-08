@@ -1,112 +1,156 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, TouchableOpacity, Modal, StyleSheet, TextInput, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons'; // PiggyBank, Plus yerine
+import { MoneyBoxForm } from '../../components/MoneyBoxForm';
+import { Dashboard } from '../../components/Dashboard';
+import { MoneyBox } from '../../src/models/MoneyBox';
 
 export default function TabTwoScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
-        </ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
+    
+  const [moneyBoxes, setMoneyBoxes] = useState<MoneyBox[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingBox, setEditingBox] = useState<MoneyBox | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const saved = await AsyncStorage.getItem('moneyboxes');
+      if (saved) {
+        setMoneyBoxes(JSON.parse(saved));
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    AsyncStorage.setItem('moneyboxes', JSON.stringify(moneyBoxes));
+  }, [moneyBoxes]);
+
+  const handleCreateBox = (boxData: Omit<MoneyBox, 'id' | 'is_deleted' | 'date'>) => {
+    const newBox: MoneyBox = {
+      ...boxData,
+      id: Date.now().toString(),
+      is_deleted: false,
+      date: new Date().toISOString(),
+    };
+    setMoneyBoxes(prev => [...prev, newBox]);
+    setIsDialogOpen(false);
+  };
+
+  const handleUpdateBox = (boxData: Omit<MoneyBox, 'id' | 'is_deleted' | 'date'>) => {
+    if (editingBox) {
+      setMoneyBoxes(prev =>
+        prev.map(box =>
+          box.id === editingBox.id ? { ...box, ...boxData } : box
+        )
+      );
+      setEditingBox(null);
+      setIsDialogOpen(false);
+    }
+  };
+
+  const handleDeleteBox = (id: string) => {
+    Alert.alert('Sil', 'Bu kutuyu silmek istediğine emin misin?', [
+      { text: 'İptal', style: 'cancel' },
+      {
+        text: 'Evet', style: 'destructive',
+        onPress: () =>
+          setMoneyBoxes(prev =>
+            prev.map(box =>
+              box.id === id ? { ...box, is_deleted: true } : box
+            )
           ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+      },
+    ]);
+  };
+
+  const handleEdit = (box: MoneyBox) => {
+    setEditingBox(box);
+    setIsDialogOpen(true);
+  };
+
+  const activeBoxes = moneyBoxes.filter(box => !box.is_deleted);
+
+  return (
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        {/* <Ionicons name="piggy-bank" size={36} color="#4f46e5" /> */}
+        <View>
+          <Text style={styles.title}>Money Box Manager</Text>
+          <Text style={styles.subtitle}>Manage your savings across locations</Text>
+        </View>
+        <TouchableOpacity
+          onPress={() => setIsDialogOpen(true)}
+          style={styles.addButton}
+        >
+          <Ionicons name="add" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Dashboard */}
+      <Dashboard moneyBoxes={activeBoxes} />
+
+      {/* List */}
+      <FlatList
+        data={activeBoxes}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.box}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.boxTitle}>{item.name}</Text>
+              <Text style={styles.boxSubtitle}>{item.city} - {item.zone}</Text>
+              <Text style={styles.amount}>₺{item.amount}</Text>
+            </View>
+            <TouchableOpacity onPress={() => handleEdit(item)}>
+              <Ionicons name="create-outline" size={22} color="#4f46e5" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleDeleteBox(item.id)}>
+              <Ionicons name="trash-outline" size={22} color="#ef4444" />
+            </TouchableOpacity>
+          </View>
+        )}
+      />
+
+      {/* Modal for Create/Edit */}
+      <Modal visible={isDialogOpen} animationType="slide" style={{height:50,maxHeight:50, margin: 0,flex:0.5 }}>
+           <View style={styles.modalContent}>
+          <MoneyBoxForm
+            initialData={editingBox || undefined}
+            onSubmit={editingBox ? handleUpdateBox : handleCreateBox}
+            onCancel={() => {
+              setEditingBox(null);
+              setIsDialogOpen(false);
+            }}
+          />
+        </View>     
+      </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
+  container: 
+  { flex: 1, backgroundColor: '#eef2ff', padding: 16 ,paddingTop:50},
+
+  header: 
+  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
+  title: 
+  { fontSize: 20, fontWeight: '600', color: '#1e1b4b' },
+  subtitle:
+   { color: '#4f46e5' },
+  addButton:
+   { backgroundColor: '#4f46e5', padding: 10, borderRadius: 8 },
+  box:
+   { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', padding: 12, borderRadius: 8, marginBottom: 8 },
+  boxTitle:
+   { fontSize: 16, fontWeight: '600' },
+  boxSubtitle:
+   { color: '#6b7280' },
+  amount:
+   { marginTop: 4, fontSize: 16, color: '#16a34a', fontWeight: '500' },
+  modalContent:
+   { flex: 1, justifyContent: 'flex-end', padding: 16 }
 });
+
+
+
