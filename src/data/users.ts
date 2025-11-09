@@ -8,8 +8,8 @@ export interface UserWithPassword extends User {
 export const dummyUsers: UserWithPassword[] = [
   {
     id: '1',
-    name: 'Kamil',
-    surname: 'Yasin',
+    name: 'Kamil Yasin',
+    surname: 'Ablay',
     phone: 5551234567,
     zone: 'İstanbul / Kadıköy',
     address: 'Bahariye Caddesi No:23, Kadıköy, İstanbul',
