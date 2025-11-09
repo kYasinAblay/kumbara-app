@@ -1,5 +1,5 @@
 export interface MoneyBox {
-  id: string;
+  id: number;
   city:string;
   zone: string;
   name: string;

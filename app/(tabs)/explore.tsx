@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, Modal, StyleSheet, TextInput, A
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons'; // PiggyBank, Plus yerine
 import { MoneyBoxForm } from '../../components/MoneyBoxForm';
-import { Dashboard } from '../../components/Dashboard';
+import { Dashboard } from '../../components/explore/Dashboard';
 import { MoneyBox } from '../../src/models/MoneyBox';
 
 export default function TabTwoScreen() {
@@ -90,26 +90,7 @@ export default function TabTwoScreen() {
       {/* Dashboard */}
       <Dashboard moneyBoxes={activeBoxes} />
 
-      {/* List */}
-      <FlatList
-        data={activeBoxes}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.box}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.boxTitle}>{item.name}</Text>
-              <Text style={styles.boxSubtitle}>{item.city} - {item.zone}</Text>
-              <Text style={styles.amount}>₺{item.amount}</Text>
-            </View>
-            <TouchableOpacity onPress={() => handleEdit(item)}>
-              <Ionicons name="create-outline" size={22} color="#4f46e5" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleDeleteBox(item.id)}>
-              <Ionicons name="trash-outline" size={22} color="#ef4444" />
-            </TouchableOpacity>
-          </View>
-        )}
-      />
+  
 
       {/* Modal for Create/Edit */}
       <Modal visible={isDialogOpen} animationType="slide" style={{height:50,maxHeight:50, margin: 0,flex:0.5 }}>

@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { MoneyBox } from '../src/models/MoneyBox';
+import { MoneyBox } from '../../src/models/MoneyBox';
+//import { ScrollView } from 'react-native-reanimated/lib/typescript/Animated';
 
 interface DashboardProps {
   moneyBoxes: MoneyBox[];
@@ -14,16 +15,9 @@ export function Dashboard({ moneyBoxes }: DashboardProps) {
   const cities = new Set(moneyBoxes.map(box => box.city));
   const totalCities = cities.size;
 
-  const cityBreakdown = Array.from(cities)
-    .map(city => {
-      const cityBoxes = moneyBoxes.filter(box => box.city === city);
-      const cityTotal = cityBoxes.reduce((sum, box) => sum + box.amount, 0);
-      return { city, total: cityTotal, count: cityBoxes.length };
-    })
-    .sort((a, b) => b.total - a.total);
 
   return (
-    <View style={styles.container}>
+      <View style={styles.container}>
       {/* Summary Cards */}
       <View style={styles.summaryContainer}>
         <View style={styles.card}>
@@ -55,32 +49,8 @@ export function Dashboard({ moneyBoxes }: DashboardProps) {
           </Text>
         </View>
       </View>
-
-      {/* City Breakdown */}
-      {cityBreakdown.length > 0 && (
-        <View style={styles.breakdownCard}>
-          <Text style={styles.breakdownTitle}>Breakdown by City</Text>
-          <FlatList
-            data={cityBreakdown}
-            keyExtractor={(item) => item.city}
-            renderItem={({ item }) => (
-              <View style={styles.cityRow}>
-                <View style={styles.cityInfo}>
-                  <Ionicons name="location" size={20} color="#4f46e5" />
-                  <View>
-                    <Text style={styles.cityName}>{item.city}</Text>
-                    <Text style={styles.citySubtitle}>
-                      {item.count} {item.count === 1 ? 'box' : 'boxes'}
-                    </Text>
-                  </View>
-                </View>
-                <Text style={styles.cityAmount}>₺{item.total.toFixed(2)}</Text>
-              </View>
-            )}
-          />
-        </View>
-      )}
     </View>
+    
   );
 }
 
