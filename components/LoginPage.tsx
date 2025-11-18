@@ -15,22 +15,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import authRepository from '@/src/repositories/AuthRepository';
 import { useLoading } from '@/hooks/useLoading';
+import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage({ onLogin }) {
   const [loginData, setLoginData] = useState({
     username: 'kyasinablay',
     password: 'm0vks7z5j9',
   });
+  const {userId,SetUser} = useAuth();
 const {littleLoading,Show,Hide}=useLoading();
 
   const handleLogin = async () => {
     try {
-    Show();
+      Show();
       console.log(loginData);
       var check = await authRepository.login(loginData);
      
        if (check.success !==undefined && check.success ) {
-          await AsyncStorage.setItem('currentUserId', check.userId);
+          SetUser(check.userId!);
+          await AsyncStorage.setItem('currentUserId', check.userId!);
           onLogin(loginData);
         } else {
           Alert.alert('Hata', 'Kullanıcı bulunamadı veya şifre hatalı!');
@@ -121,7 +124,7 @@ const {littleLoading,Show,Hide}=useLoading();
             </View>
 
             <TouchableOpacity style={styles.loginButton} disabled={littleLoading} onPress={handleLogin}>
-                {littleLoading ? <ActivityIndicator color="#fff" style={{width:50}}/> : <Text style={styles.loginButtonText}>Giriş Yap</Text>}
+                {littleLoading ? <ActivityIndicator color="#fff" style={{width:40}}/> : <Text style={styles.loginButtonText}>Giriş Yap</Text>}
             </TouchableOpacity>
 
             <Text style={styles.hintText}>

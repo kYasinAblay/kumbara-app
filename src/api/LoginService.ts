@@ -16,7 +16,8 @@ class LoginService extends BaseApiService {
     async check(): Promise<Check> {
       debugger;
       try{
- var response = await this.get("me");
+        console.log("this",this);
+ var response = await this.get<Check>("me");
       console.log("response",response);
       }
       catch(error){

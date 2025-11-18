@@ -6,7 +6,6 @@ import { useFonts } from 'expo-font';
 import React, { useEffect, useState } from 'react';
 import { View, Text,StatusBar,ActivityIndicator} from 'react-native';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthProvider,useAuth } from '@/context/AuthContext';
 
 

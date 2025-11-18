@@ -204,7 +204,7 @@ export function MoneyBoxList({
 }
 
 const styles = StyleSheet.create({
-  container: { marginTop: 8 },
+  container: { marginTop: -10 },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',

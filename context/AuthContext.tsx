@@ -7,6 +7,7 @@ import Sleep from "@/src/utils/Sleep";
 
 interface AuthContextType {
   userId: string | null | undefined;
+  SetUser: (id: string) => void;
   role:string | null |undefined;
   loading: boolean;
   littleLoad: boolean;
@@ -24,21 +25,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const[littleLoad,setLittleLoad]= useState(false);
   const [role, setRole] = useState<string | null>(null); 
 
+ const SetUser =(id:string) => setUserId(id);
+
   const showLoading = useCallback(() => setLittleLoad(true), []);
   const hideLoading = useCallback(() => setLittleLoad(false), []);
 
   // İlk yüklemede session kontrolü
   const checkSession = async () => {
     try {
-  
+  debugger;
       const res = {
         success:true,
         userId:"kmieyam",
         role:"admin"
       }
-      // await AuthRepository.me();
-     
+      var response= await AuthRepository.me();
+     console.log("checksession > response", response);
      console.log("checksession > Res",res);
+
       if (res.success) {
         const {userId,role} = res;
         setUserId(userId!);
@@ -69,7 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
   return (
-    <AuthContext.Provider value={{ userId,role, loading,littleLoad,showLoading,hideLoading, checkSession, logout }}>
+    <AuthContext.Provider value={{ userId,SetUser,role, loading,littleLoad,showLoading,hideLoading, checkSession, logout }}>
       {children}
     </AuthContext.Provider>
   );

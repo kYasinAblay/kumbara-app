@@ -54,9 +54,9 @@ export default function ProfileScreen() {
 
   const handleLogout = async () => {
   
-      AuthRepository.logout();
-   await Sleep(1500).then(()=>{
-       router.push("/login");
+    AuthRepository.logout();
+    await Sleep(1500).then(()=>{
+    router.push("/login");
     }).finally(()=>setUser({
         id: "",
         name: "",
@@ -71,9 +71,7 @@ export default function ProfileScreen() {
         picture: "",
         is_deleted: false,
         moneyboxes: [],
-      }));
-         
-      
+      }));      
   };
 
   return (

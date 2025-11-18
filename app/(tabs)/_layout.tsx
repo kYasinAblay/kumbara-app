@@ -12,10 +12,8 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { userId } = useAuth();
 
-console.log("TABS/_layout > role ",IsAdmin(), userId);
+  console.log("TABS/_layout > role ",IsAdmin(), userId);
  
- 
-
   return (
     <Tabs
       screenOptions={{

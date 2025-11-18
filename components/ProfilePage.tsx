@@ -117,7 +117,7 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
           )}
         </View>
       {/* PROFIL KARTI */}
-      <View style={styles.card}>
+      <View style={[styles.card,{marginTop:-15}]}>
         <View style={styles.profileHeader}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>{getInitials()}</Text>
