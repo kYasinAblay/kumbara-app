@@ -14,17 +14,7 @@ class LoginService extends BaseApiService {
     return this.post<Logout>("logout");
   }
     async check(): Promise<Check> {
-      debugger;
-      try{
-        console.log("this",this);
- var response = await this.get<Check>("me");
-      console.log("response",response);
-      }
-      catch(error){
-        console.log(error);
-      }
-     
-    return this.get<Check>("me");
+       return this.get<Check>("me");
   }
 }
 export default new LoginService();

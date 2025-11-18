@@ -15,33 +15,33 @@ export default class BaseApiService {
       withCredentials: true,
     });
 
-    // // → Cookie ekleme
-    // this.client.interceptors.request.use(async config => {
-    //   const cookie = SessionCookieStore.get();
+    // → Cookie ekleme
+    this.client.interceptors.request.use(async config => {
+      const cookie = SessionCookieStore.get();
 
-    //   if (cookie) {
-    //     config.headers["Cookie"] = cookie;
-    //   }
+      if (cookie) {
+        config.headers["Cookie"] = cookie;
+      }
 
-    //   return config;
-    // });
+      return config;
+    });
 
-    // // Cookie yakalama (login olduktan sonra)
-    // this.client.interceptors.response.use(
-    //   response => {
-    //     const setCookie = response.headers["set-cookie"];
+    // Cookie yakalama (login olduktan sonra)
+    this.client.interceptors.response.use(
+      response => {
+        const setCookie = response.headers["set-cookie"];
 
-    //     if (setCookie && Array.isArray(setCookie)) {
-    //       SessionCookieStore.set(setCookie[0]); 
-    //       console.log("SESSION COOKIE STORED:", setCookie[0]);
-    //     }
+        if (setCookie && Array.isArray(setCookie)) {
+          SessionCookieStore.set(setCookie[0]); 
+          console.log("SESSION COOKIE STORED:", setCookie[0]);
+        }
 
-    //     return response;
-    //   },
-    //   error => {
-    //     return Promise.reject(error);
-    //   }
-    // );
+        return response;
+      },
+      error => {
+        return Promise.reject(error);
+      }
+        );
   }
 
   protected async get<T>(url: string): Promise<T> {
