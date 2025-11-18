@@ -9,13 +9,14 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginPage from '@/components/LoginPage';
 import { useRouter } from 'expo-router';
+import { LoginRequest } from '@/src/models/LoginRequest';
 
 export default function LoginScreen() {
   const router = useRouter();
 
-  const handleLogin = (user) => {
+  const handleLogin = (login:LoginRequest) => {
     //boş kontrol yapılacak
-    console.log('Giriş yapan kullanıcı:', user);
+    console.log('Giriş yapan kullanıcı:', login);
     router.push('/profile');
   };
 

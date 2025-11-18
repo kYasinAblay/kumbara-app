@@ -5,12 +5,18 @@ import { Ionicons } from '@expo/vector-icons'; // PiggyBank, Plus yerine
 import { MoneyBoxForm } from '../../components/MoneyBoxForm';
 import { Dashboard } from '../../components/explore/Dashboard';
 import { MoneyBox } from '../../src/models/MoneyBox';
+import { useAuth } from '@/context/AuthContext';
+import { Redirect, useRouter } from 'expo-router';
+import IsAdmin from '@/hooks/useAuthorization';
+import { AlertDialog } from '@/components/ui/AlertDialog';
 
-export default function TabTwoScreen() {
+export default function ExploreScreen() {
     
   const [moneyBoxes, setMoneyBoxes] = useState<MoneyBox[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBox, setEditingBox] = useState<MoneyBox | null>(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -70,6 +76,18 @@ export default function TabTwoScreen() {
 
   const activeBoxes = moneyBoxes.filter(box => !box.is_deleted);
 
+  if (!IsAdmin()) {
+   
+    return <View><AlertDialog
+            visible={true}
+            onClose={() => setIsDialogOpen(false)}
+            title="Yetkiniz Yok"
+            description={`Bu tab'a girmek için yetkiniz bulunmamaktadır.`}
+            confirmText="Tamam"
+            onConfirm={()=>router.navigate("/(tabs)")}
+          /></View>;
+  }
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -79,12 +97,13 @@ export default function TabTwoScreen() {
           <Text style={styles.title}>Money Box Manager</Text>
           <Text style={styles.subtitle}>Manage your savings across locations</Text>
         </View>
+        {/* bu bölümü istatistik butonu yapabiliriz
         <TouchableOpacity
           onPress={() => setIsDialogOpen(true)}
           style={styles.addButton}
         >
           <Ionicons name="add" size={24} color="white" />
-        </TouchableOpacity>
+        </TouchableOpacity> */} 
       </View>
 
       {/* Dashboard */}

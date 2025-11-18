@@ -13,6 +13,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { MoneyBox } from '../src/models/MoneyBox';
 import { MoneyBoxCard } from '../components/MoneyBoxCard';
+import { useAuth } from '@/context/AuthContext';
+import IsAdmin from '@/hooks/useAuthorization';
 
 interface MoneyBoxListProps {
   moneyBoxes: MoneyBox[];
@@ -32,6 +34,7 @@ export function MoneyBoxList({
   const [sortBy, setSortBy] = useState<'date' | 'amount' | 'name'>('date');
   const [filterVisible, setFilterVisible] = useState(false);
 
+ 
   const cities = useMemo(
     () => Array.from(new Set(moneyBoxes.map(b => b.city))).sort(),
     [moneyBoxes]
@@ -67,7 +70,8 @@ export function MoneyBoxList({
   return (
     <View style={styles.container}>
       {/* 🔍 Search bar */}
-      <View style={styles.searchBar}>
+     { IsAdmin() &&
+<View style={styles.searchBar}>
         <Ionicons name="search" size={18} color="#9ca3af" style={styles.iconLeft} />
         <TextInput
           placeholder="Kumbara ara..."
@@ -83,6 +87,7 @@ export function MoneyBoxList({
           {hasFilters && <View style={styles.activeDot} />}
         </TouchableOpacity>
       </View>
+     } 
 
       {/* 🧮 Count */}
       {filteredAndSortedBoxes.length > 0 && (

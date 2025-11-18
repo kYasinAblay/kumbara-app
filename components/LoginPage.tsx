@@ -9,35 +9,51 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ActivityIndicator
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import authRepository from '@/src/repositories/AuthRepository';
+import { useLoading } from '@/hooks/useLoading';
 
 export default function LoginPage({ onLogin }) {
   const [loginData, setLoginData] = useState({
-    email: '',
-    password: '',
+    username: 'kyasinablay',
+    password: 'm0vks7z5j9',
   });
+const {littleLoading,Show,Hide}=useLoading();
 
   const handleLogin = async () => {
     try {
-      const savedUsers = await AsyncStorage.getItem('users');
-      if (savedUsers) {
-        const users = JSON.parse(savedUsers);
-        const user = users.find(
-          (u) =>
-            u.name.toLowerCase() === loginData.email.toLowerCase() && !u.is_deleted
-        );
-
-        if (user) {
-          await AsyncStorage.setItem('currentUserId', user.id);
-          onLogin(user);
+    Show();
+      console.log(loginData);
+      var check = await authRepository.login(loginData);
+     
+       if (check.success !==undefined && check.success ) {
+          await AsyncStorage.setItem('currentUserId', check.userId);
+          onLogin(loginData);
         } else {
           Alert.alert('Hata', 'Kullanıcı bulunamadı veya şifre hatalı!');
         }
-      } else {
-        Alert.alert('Uyarı', 'Kayıtlı kullanıcı bulunamadı!');
-      }
+        Hide();
+     // onLogin(loginData);
+      // const savedUsers = await AsyncStorage.getItem('users');
+      // if (savedUsers) {
+      //   const users = JSON.parse(savedUsers);
+      //   const user = users.find(
+      //     (u) =>
+      //       u.name.toLowerCase() === loginData.username.toLowerCase() && !u.is_deleted
+      //   );
+
+      //   if (user) {
+      //     await AsyncStorage.setItem('currentUserId', user.id);
+      //     onLogin(user);
+      //   } else {
+      //     Alert.alert('Hata', 'Kullanıcı bulunamadı veya şifre hatalı!');
+      //   }
+      // } else {
+      //   Alert.alert('Uyarı', 'Kayıtlı kullanıcı bulunamadı!');
+      // }
     } catch (err) {
       console.error(err);
       Alert.alert('Hata', 'Giriş işlemi sırasında bir hata oluştu.');
@@ -78,8 +94,8 @@ export default function LoginPage({ onLogin }) {
               />
               <TextInput
                 placeholder="Adınızı girin"
-                value={loginData.email}
-                onChangeText={(text) => setLoginData({ ...loginData, email: text })}
+                value={loginData.username}
+                onChangeText={(text) => setLoginData({ ...loginData, username: text })}
                 style={styles.input}
                 autoCapitalize="none"
               />
@@ -104,8 +120,8 @@ export default function LoginPage({ onLogin }) {
               />
             </View>
 
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-              <Text style={styles.loginButtonText}>Giriş Yap</Text>
+            <TouchableOpacity style={styles.loginButton} disabled={littleLoading} onPress={handleLogin}>
+                {littleLoading ? <ActivityIndicator color="#fff" style={{width:50}}/> : <Text style={styles.loginButtonText}>Giriş Yap</Text>}
             </TouchableOpacity>
 
             <Text style={styles.hintText}>

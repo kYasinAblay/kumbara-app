@@ -24,7 +24,7 @@ export const Dialog: React.FC<DialogProps> = ({ visible, onClose, children }) =>
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        <Pressable style={styles.backdrop} onPress={onClose} />
+       <Pressable style={styles.backdrop}  /* onPress={onClose}*/ /> 
         <View style={styles.content}>
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
             <Ionicons name="close" size={22} color="#6b7280" />

@@ -7,45 +7,76 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Modal,
+  StatusBar,
+  ActivityIndicator
 } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { Ionicons, MaterialIcons, Feather } from "@expo/vector-icons";
+import { User } from '@/src/models/User';
+import { Card,CardHeader,CardTitle,CardContent } from './ui/Card';
+import {useLoading} from '@/hooks/useLoading';
+import Sleep from '@/src/utils/Sleep';
 
 
+interface ProfilePageProps {
+  user: User;
+  onUpdateUser: (data: Omit<User, "id" | "date" | "is_deleted" | "moneyboxes" | "role">) => void;
+  onLogout?: () => void;
+}
 
-export default function ProfilePage({ user, onUpdateUser }) {
+export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePageProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
+ 
   const [formData, setFormData] = useState({
     name: user.name,
     surname: user.surname,
     phone: user.phone.toString(),
+    city:user.city,
+    picture:user.picture,
     zone: user.zone,
     address: user.address,
   });
+
+  const { littleLoading, Show, Hide } = useLoading();
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+
+  
   const handleSubmit = () => {
     onUpdateUser({
       name: formData.name,
       surname: formData.surname,
-      phone: parseInt(formData.phone),
+      phone:parseInt(formData.phone),
+      city:formData.city,
+      picture:formData.picture,
       zone: formData.zone,
-      address: formData.address,
+      address: formData.address
     });
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     setFormData({
-      name: user.name,
-      surname: user.surname,
-      phone: user.phone.toString(),
-      zone: user.zone,
-      address: user.address,
+       name: formData.name,
+      surname: formData.surname,
+      phone: formData.phone,
+      city:formData.city,
+      picture:formData.picture,
+      zone: formData.zone,
+      address: formData.address
     });
     setIsEditing(false);
+  };
+
+ const handleLogout = async () => {
+
+   Show();
+   await onLogout?.();
+   await Sleep(1500).then(Hide);
   };
 
   const formatDate = (dateString: string) => {
@@ -65,12 +96,26 @@ export default function ProfilePage({ user, onUpdateUser }) {
   const totalSavings = activeMoneyboxes.reduce((sum, box) => sum + box.amount, 0);
 
   return (
+ 
     <ScrollView style={styles.container}>
-      <Text style={styles.headerTitle}>Profil</Text>
-      <Text style={styles.headerSubtitle}>
-        Kişisel bilgilerinizi görüntüleyin ve düzenleyin
-      </Text>
+       {/* HEADER */}
+      
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.headerTitle}>Profil</Text>
+            <Text style={styles.headerSubtitle}>Kişisel bilgilerinizi düzenleyin</Text>
+          </View>
 
+          {onLogout && (
+            <TouchableOpacity
+              style={styles.logoutButton}
+              onPress={() => setIsLogoutModalVisible(true)}
+            >
+              <Feather name="log-out" size={18} color="red" />
+              <Text style={styles.logoutText}>Çıkış</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       {/* PROFIL KARTI */}
       <View style={styles.card}>
         <View style={styles.profileHeader}>
@@ -83,7 +128,7 @@ export default function ProfilePage({ user, onUpdateUser }) {
             </Text>
             <Text style={styles.memberText}>
               <Ionicons name="calendar-outline" size={14} /> Üyelik:{' '}
-              {formatDate(user.date)}
+              {formatDate(user.date.toString())}
             </Text>
           </View>
 
@@ -203,7 +248,7 @@ export default function ProfilePage({ user, onUpdateUser }) {
         )}
       </View>
 
-      {/* TOPLAM BIRIKIM */}
+        {/* TOPLAM BIRIKIM */}
       <View style={styles.summaryCard}>
         <Text style={styles.summaryTitle}>Toplam Birikim</Text>
         <Text style={styles.summaryAmount}>₺{totalSavings.toFixed(2)}</Text>
@@ -211,6 +256,105 @@ export default function ProfilePage({ user, onUpdateUser }) {
           {activeMoneyboxes.length} kumbara
         </Text>
       </View>
+
+<Card>
+  <CardHeader>
+    <CardTitle style={{ color: "#1e1b4b", fontSize: 14 }}>İstatistikler</CardTitle>
+  </CardHeader>
+
+  <CardContent>
+
+    {/* Aktif Kumbara */}
+    <View style={styles.statRow}>
+      <Text style={styles.statLabel}>Aktif Kumbara</Text>
+      <View style={[styles.badge, { backgroundColor: "#4f46e5" }]}>
+        <Text style={styles.badgeText}>{activeMoneyboxes.length}</Text>
+      </View>
+    </View>
+
+    {/* Toplam Kumbara */}
+    <View style={styles.statRow}>
+      <Text style={styles.statLabel}>Toplam Kumbara</Text>
+      <View style={[styles.badge, { backgroundColor: "#6b7280" }]}>
+        <Text style={styles.badgeText}>{user.moneyboxes.length}</Text>
+      </View>
+    </View>
+
+    {/* Ortalama Miktar */}
+    <View style={[styles.statRow, { borderBottomWidth: 0 }]}>
+      <Text style={styles.statLabel}>Ortalama Miktar</Text>
+      <Text style={styles.statValue}>
+        ₺{activeMoneyboxes.length > 0
+          ? (totalSavings / activeMoneyboxes.length).toFixed(2)
+          : "0.00"}
+      </Text>
+    </View>
+
+  </CardContent>
+</Card>
+
+    
+      <Card style={{marginTop:20,marginBottom:70}}>
+  <CardHeader>
+    <CardTitle style={{ color: "#1e1b4b", fontSize: 14 }}>Hesap Bilgileri</CardTitle>
+  </CardHeader>
+
+  <CardContent>
+
+    {/* USER ID */}
+    <View style={{ marginBottom: 10}}>
+      <Text style={styles.infoLabel}>Kullanıcı ID</Text>
+      <Text style={styles.infoValueID}>{user.id}</Text>
+    </View>
+
+    {/* DATE */}
+    <View style={{ marginBottom: 10 }}>
+      <Text style={styles.infoLabel}>Kayıt Tarihi</Text>
+      <Text style={styles.infoValue}>{formatDate(user.date.toString())}</Text>
+    </View>
+
+    {/* STATUS */}
+    <View>
+      <Text style={styles.infoLabel}>Durum</Text>
+      <View style={[styles.badge, { backgroundColor: "#22c55e", alignSelf: "flex-start" }]}>
+        <Text style={[styles.badgeText, { color: "#fff" }]}>Aktif</Text>
+      </View>
+    </View>
+
+  </CardContent>
+</Card>
+
+
+     {/* LOGOUT MODAL */}
+      <Modal visible={isLogoutModalVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalTitle}>Çıkış Yap</Text>
+            <Text style={styles.modalDesc}>
+              Hesabınızdan çıkmak istediğinize emin misiniz?
+            </Text>
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.modalCancel}
+                onPress={() => setIsLogoutModalVisible(false)}
+              >
+                <Text>İptal</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                disabled={littleLoading}
+                style={[styles.modalConfirm]}
+                onPress={handleLogout}
+              >
+               {littleLoading ? <ActivityIndicator color="#fff" style={{width:50}}/> : 
+                <Text style={{ color: "#fff" }}>Evet, Çıkış Yap</Text>}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
     </ScrollView>
   );
 }
@@ -222,6 +366,7 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 50,
   },
+   header: { flexDirection: "row", justifyContent: "space-between", marginBottom: 20 },
   headerTitle: {
     fontSize: 26,
     fontWeight: '700',
@@ -231,6 +376,17 @@ const styles = StyleSheet.create({
     color: '#6366f1',
     marginBottom: 16,
   },
+   logoutButton: {
+    flexDirection: "row",
+    padding: 8,
+    marginTop:10,
+    borderWidth: 1,
+    borderColor: "red",
+    borderRadius: 8,
+    alignItems: "center",
+    height:40
+  },
+  logoutText: { color: "red", marginLeft: 6 },
   card: {
     backgroundColor: '#fff',
     borderRadius: 12,
@@ -321,9 +477,86 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 20
   },
   summaryTitle: { color: '#fff', fontSize: 16 },
   summaryAmount: { color: '#fff', fontSize: 28, fontWeight: '700' },
   summarySub: { color: '#e0e7ff', fontSize: 12 },
+    modalOverlay: {
+    flex: 1, backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center", alignItems: "center"
+  },
+ statRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderColor: "#e5e7eb",
+  },
+  statLabel: {
+    color: "#52525b",
+    fontSize: 14,
+  },
+  statValue: {
+    color: "#312e81",
+    fontWeight: "600",
+    fontSize: 14,
+  },
+
+  badge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  badgeText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 12,
+  },
+
+  infoLabel: {
+    fontSize: 12,
+    color: "#6b7280",
+    marginBottom: 3,
+  },
+  infoValue: {
+    fontSize: 14,
+    color: "#1e1b4b",
+  },
+  infoValueID: {
+    fontSize: 12,
+    backgroundColor: "#f3f4f6",
+    padding: 8,
+    borderRadius: 6,
+    color: "#1e1b4b",
+    fontFamily: "monospace",
+  },
+  modalBox: {
+    backgroundColor: "#fff",
+    width: "80%",
+    padding: 20,
+    borderRadius: 14
+  },
+
+  modalTitle: { fontWeight: "700", fontSize: 18, marginBottom: 10 },
+  modalDesc: { fontSize: 14, color: "#444" },
+
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 20,
+    gap: 10
+  },
+
+  modalCancel: {
+    padding: 10
+  },
+
+  modalConfirm: {
+    backgroundColor: "red",
+    padding: 10,
+    borderRadius: 6
+  }
 });

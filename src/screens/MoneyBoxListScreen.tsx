@@ -15,7 +15,6 @@ export default function MoneyBoxListScreen() {
       console.clear();
       var data = result.moneyboxes;
       
-
       const groupedData = Object.values(
       data.reduce((acc:any, item:MoneyBox) => {
         const city = item.city;

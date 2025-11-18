@@ -14,7 +14,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Dashboard } from '../../components/home/Dashboard';
-// import { MoneyBoxList } from '../../components/MoneyBoxList';
 import { MoneyBoxForm } from '../../components/MoneyBoxForm';
 import {
   Dialog,
@@ -102,7 +101,7 @@ const [moneyBoxes, setMoneyBoxes] = useState<MoneyBox[]>([]);
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <View style={styles.logoBox}>
-              <Ionicons name="piggy-bank" size={22} color="#fff" />
+              <Ionicons name="cash-outline" size={22} color="#fff" />
             </View>
             <View>
               <Text style={styles.title}>Kumbaralar</Text>

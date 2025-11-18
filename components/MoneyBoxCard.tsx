@@ -37,7 +37,7 @@ export const MoneyBoxCard: React.FC<Props> = ({
     setAmountText('');
   };
 
-//   const dateStr = new Date(box.date).toLocaleDateString('tr-TR');
+ //const dateStr = new Date(box.date).toLocaleDateString('tr-TR');
 
   return (
     <>

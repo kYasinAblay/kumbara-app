@@ -20,7 +20,7 @@ export default class BaseApiService {
     return response.data;
   }
 
-  protected async post<T>(url: string, data: any): Promise<T> {
+  protected async post<T>(url: string, data?: any): Promise<T> {
     const response = await this.client.post<T>(url, data);
     return response.data;
   }

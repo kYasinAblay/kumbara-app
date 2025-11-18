@@ -29,7 +29,7 @@ export const AlertDialog: React.FC<AlertDialogProps> = ({
   description,
   onConfirm,
   confirmText = 'Tamam',
-  cancelText = 'İptal',
+  cancelText,
 }) => {
   return (
     <Modal visible={visible} transparent animationType="fade">
@@ -46,9 +46,10 @@ export const AlertDialog: React.FC<AlertDialogProps> = ({
 
           {/* Footer */}
           <View style={styles.footer}>
-            <TouchableOpacity style={[styles.button, styles.cancel]} onPress={onClose}>
+            { cancelText !== undefined && <TouchableOpacity style={[styles.button, styles.cancel]} onPress={onClose}>
               <Text style={styles.cancelText}>{cancelText}</Text>
-            </TouchableOpacity>
+            </TouchableOpacity>}
+           
 
             <TouchableOpacity
               style={[styles.button, styles.confirm]}
@@ -89,6 +90,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 5,
+    alignItems:'center'
   },
   header: {
     marginBottom: 16,
@@ -132,5 +134,6 @@ const styles = StyleSheet.create({
   confirmText: {
     color: '#fff',
     fontWeight: '600',
+    alignSelf:'center'
   },
 });
