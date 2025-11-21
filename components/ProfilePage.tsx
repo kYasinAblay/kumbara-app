@@ -1,5 +1,5 @@
 // app/profile/ProfilePage.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -14,8 +14,11 @@ import {
 import { Ionicons, MaterialIcons, Feather } from "@expo/vector-icons";
 import { User } from '@/src/models/User';
 import { Card,CardHeader,CardTitle,CardContent } from './ui/Card';
-import {useLoading} from '@/hooks/useLoading';
 import Sleep from '@/src/utils/Sleep';
+import CityDistrictSelect from './CityDistrictSelect';
+import { getCityNameById } from '@/hooks/getCityNameById';
+import { useLoading } from '@/context/LoadingContext';
+import UserRepository from '@/src/repositories/UserRepository';
 
 
 interface ProfilePageProps {
@@ -27,35 +30,40 @@ interface ProfilePageProps {
 export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePageProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
- 
+
   const [formData, setFormData] = useState({
     name: user.name,
     surname: user.surname,
-    phone: user.phone.toString(),
+    phone: user.phone,
     city:user.city,
+    district:user.district,
     picture:user.picture,
     zone: user.zone,
-    address: user.address,
+    address: user.address
   });
 
-  const { littleLoading, Show, Hide } = useLoading();
+  const { loading,showLoading,hideLoading } = useLoading();
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: string, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
 
   
   const handleSubmit = () => {
+
     onUpdateUser({
       name: formData.name,
       surname: formData.surname,
-      phone:parseInt(formData.phone),
+      phone:formData.phone,
       city:formData.city,
+      district:formData.district,
       picture:formData.picture,
       zone: formData.zone,
       address: formData.address
     });
+
+    UserRepository.update({ ...formData});
     setIsEditing(false);
   };
 
@@ -65,6 +73,7 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
       surname: formData.surname,
       phone: formData.phone,
       city:formData.city,
+      district:formData.district,
       picture:formData.picture,
       zone: formData.zone,
       address: formData.address
@@ -74,9 +83,9 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
 
  const handleLogout = async () => {
 
-   Show();
+   showLoading();
    await onLogout?.();
-   await Sleep(1500).then(Hide);
+   await Sleep(1500).then(hideLoading);
   };
 
   const formatDate = (dateString: string) => {
@@ -92,8 +101,23 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
     return `${user.name[0]}${user.surname[0]}`.toUpperCase();
   };
 
-  const activeMoneyboxes = user.moneyboxes.filter((box) => !box.is_deleted);
+  const activeMoneyboxes = user.moneyboxes?.filter((box) => !box.is_deleted);
   const totalSavings = activeMoneyboxes.reduce((sum, box) => sum + box.amount, 0);
+
+  useEffect(() => {
+  if (!user) return;
+
+  setFormData({
+    name: user.name,
+    surname: user.surname,
+    phone: user.phone,
+    city: user.city,
+    district: user.district,
+    picture: user.picture,
+    zone: user.zone,
+    address: user.address
+  });
+}, [user]);
 
   return (
  
@@ -128,7 +152,7 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
             </Text>
             <Text style={styles.memberText}>
               <Ionicons name="calendar-outline" size={14} /> Üyelik:{' '}
-              {formatDate(user.date.toString())}
+              {formatDate(user.date?.toString())}
             </Text>
           </View>
 
@@ -168,27 +192,48 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
               <Text style={styles.label}>Telefon</Text>
               <TextInput
                 keyboardType="phone-pad"
-                value={formData.phone}
+                value={formData.phone.toString()}
                 onChangeText={(v) => handleChange('phone', v)}
                 style={styles.input}
               />
             </View>
+            
 
-            <View style={styles.inputGroup}>
+            <CityDistrictSelect formData={formData} handleChange={handleChange} />
+   
+            {/* <View style={styles.cityZoneInput}>
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Bölge</Text>
+                <TextInput
+                  value={formData.zone}
+                  onChangeText={(v) => handleChange('zone', v)}
+                  style={styles.rowInput}
+                />
+              </View>
+                <View style={styles.inputGroup}>
+                <Text style={styles.label}>Şehir</Text>
+                <TextInput
+                  value={formData.city}
+                  onChangeText={(v) => handleChange('city', v)}
+                  style={styles.rowInput}
+                />
+              </View>
+            </View> */}
+
+              <View style={styles.inputGroup}>
               <Text style={styles.label}>Bölge</Text>
               <TextInput
                 value={formData.zone}
                 onChangeText={(v) => handleChange('zone', v)}
-                style={styles.input}
+                style={[styles.input]}
               />
             </View>
-
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Adres</Text>
               <TextInput
                 value={formData.address}
                 onChangeText={(v) => handleChange('address', v)}
-                style={[styles.input, { height: 80 }]}
+                style={[styles.input, { height: 80, }]}
                 multiline
               />
             </View>
@@ -223,7 +268,7 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
             </View>
             <View style={styles.infoItem}>
               <Ionicons name="map-outline" size={20} color="#4b0082" />
-              <Text style={styles.infoText}>{user.zone}</Text>
+              <Text style={styles.infoText}>{getCityNameById(user.city)}/{user.zone}</Text>
             </View>
             <View style={styles.infoItem}>
               <Ionicons name="home-outline" size={20} color="#4b0082" />
@@ -310,7 +355,7 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
     {/* DATE */}
     <View style={{ marginBottom: 10 }}>
       <Text style={styles.infoLabel}>Kayıt Tarihi</Text>
-      <Text style={styles.infoValue}>{formatDate(user.date.toString())}</Text>
+      <Text style={styles.infoValue}>{formatDate(user.date?.toString())}</Text>
     </View>
 
     {/* STATUS */}
@@ -343,11 +388,11 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
               </TouchableOpacity>
 
               <TouchableOpacity
-                disabled={littleLoading}
+                disabled={loading}
                 style={[styles.modalConfirm]}
                 onPress={handleLogout}
               >
-               {littleLoading ? <ActivityIndicator color="#fff" style={{width:50}}/> : 
+               {loading ? <ActivityIndicator color="#fff" style={{width:50}}/> : 
                 <Text style={{ color: "#fff" }}>Evet, Çıkış Yap</Text>}
               </TouchableOpacity>
             </View>
@@ -433,12 +478,27 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 14,
   },
+   rowInput: {
+    borderWidth: 1,
+    borderColor: '#c7d2fe',
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 14,
+    width:175,
+    maxWidth:"100%"
+  },
+  cityZoneInput: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 8,
     marginTop: 10,
   },
+   
   saveButton: {
     flex: 1,
     flexDirection: 'row',

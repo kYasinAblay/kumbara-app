@@ -4,6 +4,7 @@ import { User } from "../models/User";
 import { Check } from "../models/Check";
 import { Logout } from "../models/Logout";
 import SessionCookieStore from "../session/SessionCookieStore";
+import { Me } from "../models/Me";
 
 class AuthRepository {
   async login(user: LoginRequest): Promise<Check> {
@@ -15,20 +16,47 @@ class AuthRepository {
     return await LoginService.logout();
   }
 
-  async me(): Promise<Check> {
+  async me(): Promise<Me> {
     try {
       debugger;
-      var deneme = await LoginService.check();
+      var deneme = await LoginService.me();
       console.log(deneme);
+
+
+      return await LoginService.me();
+    } catch (error) {
+      console.log(error);
+      return {
+        success: false,
+        user:{
+          address:"",
+          city:1,
+          date:"",
+          district:"",
+          moneyboxes:[],
+          name:"",
+          surname:"",
+          phone:"",
+          role:"",
+          zone:"",
+          username:"",
+          picture:"",
+          is_deleted:false,
+          id:"",
+        },
+      };
+    }
+
+  }
+
+    async check(): Promise<Check> {
+    try {
       return await LoginService.check();
     } catch (error) {
       console.log(error);
       return {
         success: false,
-        userId: "repositoryden geliyorum",
-        role: "",
-        status: 0,
-        message: ""
+        message:"Bilgilerinize ulaşılamadı.."
       };
     }
 

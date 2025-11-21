@@ -5,9 +5,10 @@ export interface User {
   username?:string,
   name:string;
   surname: string;
-  phone: number;
+  phone: string;
   zone: string;
-  city:string;
+  city:number;
+  district:string;
   address: string;
   picture: string;
   moneyboxes: MoneyBox[];

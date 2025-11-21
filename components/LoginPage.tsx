@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -9,64 +9,43 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  ActivityIndicator
-} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import authRepository from '@/src/repositories/AuthRepository';
-import { useLoading } from '@/hooks/useLoading';
-import { useAuth } from '@/context/AuthContext';
+  ActivityIndicator,
+} from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import authRepository from "@/src/repositories/AuthRepository";
+import { useLoading } from "@/context/LoadingContext";
+
 
 export default function LoginPage({ onLogin }) {
   const [loginData, setLoginData] = useState({
-    username: 'kyasinablay',
-    password: 'm0vks7z5j9',
+    username: "kyasinablay",
+    password: "m0vks7z5j9",
   });
-  const {userId,SetUser} = useAuth();
-const {littleLoading,Show,Hide}=useLoading();
+  
+ const {loading, showLoading, hideLoading } = useLoading();
+
 
   const handleLogin = async () => {
     try {
-      Show();
+      debugger;
       console.log(loginData);
       var check = await authRepository.login(loginData);
-     
-       if (check.success !==undefined && check.success ) {
-          SetUser(check.userId!);
-          await AsyncStorage.setItem('currentUserId', check.userId!);
-          onLogin(loginData);
-        } else {
-          Alert.alert('Hata', 'Kullanıcı bulunamadı veya şifre hatalı!');
-        }
-        Hide();
-     // onLogin(loginData);
-      // const savedUsers = await AsyncStorage.getItem('users');
-      // if (savedUsers) {
-      //   const users = JSON.parse(savedUsers);
-      //   const user = users.find(
-      //     (u) =>
-      //       u.name.toLowerCase() === loginData.username.toLowerCase() && !u.is_deleted
-      //   );
 
-      //   if (user) {
-      //     await AsyncStorage.setItem('currentUserId', user.id);
-      //     onLogin(user);
-      //   } else {
-      //     Alert.alert('Hata', 'Kullanıcı bulunamadı veya şifre hatalı!');
-      //   }
-      // } else {
-      //   Alert.alert('Uyarı', 'Kayıtlı kullanıcı bulunamadı!');
-      // }
+      if (check.success !== undefined && check.success) {
+        onLogin(loginData);
+      } else {
+        Alert.alert("Hata", "Kullanıcı bulunamadı veya şifre hatalı!");
+      }
     } catch (err) {
       console.error(err);
-      Alert.alert('Hata', 'Giriş işlemi sırasında bir hata oluştu.');
+      Alert.alert("Hata", "Giriş işlemi sırasında bir hata oluştu.");
     }
   };
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView
         contentContainerStyle={styles.container}
@@ -98,7 +77,9 @@ const {littleLoading,Show,Hide}=useLoading();
               <TextInput
                 placeholder="Adınızı girin"
                 value={loginData.username}
-                onChangeText={(text) => setLoginData({ ...loginData, username: text })}
+                onChangeText={(text) =>
+                  setLoginData({ ...loginData, username: text })
+                }
                 style={styles.input}
                 autoCapitalize="none"
               />
@@ -123,8 +104,16 @@ const {littleLoading,Show,Hide}=useLoading();
               />
             </View>
 
-            <TouchableOpacity style={styles.loginButton} disabled={littleLoading} onPress={handleLogin}>
-                {littleLoading ? <ActivityIndicator color="#fff" style={{width:40}}/> : <Text style={styles.loginButtonText}>Giriş Yap</Text>}
+            <TouchableOpacity
+              style={styles.loginButton}
+              disabled={loading}
+              onPress={handleLogin}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" style={{ width: 40 }} />
+              ) : (
+                <Text style={styles.loginButtonText}>Giriş Yap</Text>
+              )}
             </TouchableOpacity>
 
             <Text style={styles.hintText}>
@@ -145,105 +134,105 @@ const {littleLoading,Show,Hide}=useLoading();
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#eef2ff',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#eef2ff",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   logoContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 24,
   },
   logoCircle: {
     width: 72,
     height: 72,
-    backgroundColor: '#4f46e5',
+    backgroundColor: "#4f46e5",
     borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 5,
   },
   title: {
     fontSize: 22,
-    fontWeight: '700',
-    color: '#312e81',
+    fontWeight: "700",
+    color: "#312e81",
   },
   subtitle: {
     fontSize: 14,
-    color: '#6366f1',
+    color: "#6366f1",
   },
   card: {
-    backgroundColor: '#fff',
-    width: '100%',
+    backgroundColor: "#fff",
+    width: "100%",
     maxWidth: 400,
     borderRadius: 16,
     padding: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
   },
   cardTitle: {
     fontSize: 20,
-    fontWeight: '700',
-    textAlign: 'center',
-    color: '#312e81',
+    fontWeight: "700",
+    textAlign: "center",
+    color: "#312e81",
   },
   cardSubtitle: {
-    textAlign: 'center',
-    color: '#6b7280',
+    textAlign: "center",
+    color: "#6b7280",
     fontSize: 14,
   },
   label: {
     fontSize: 14,
-    color: '#374151',
+    color: "#374151",
     marginBottom: 4,
     marginLeft: 4,
   },
   inputContainer: {
-    position: 'relative',
+    position: "relative",
   },
   inputIcon: {
-    position: 'absolute',
+    position: "absolute",
     left: 10,
-    top: '50%',
+    top: "50%",
     marginTop: -10,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#c7d2fe',
+    borderColor: "#c7d2fe",
     borderRadius: 10,
     padding: 10,
     paddingLeft: 36,
     fontSize: 14,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   loginButton: {
-    backgroundColor: '#4f46e5',
+    backgroundColor: "#4f46e5",
     marginTop: 20,
     paddingVertical: 12,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   loginButtonText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: "#fff",
+    fontWeight: "600",
     fontSize: 16,
   },
   hintText: {
     marginTop: 12,
-    textAlign: 'center',
-    color: '#6b7280',
+    textAlign: "center",
+    color: "#6b7280",
     fontSize: 12,
   },
   footer: {
     marginTop: 24,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 12,
-    color: '#818cf8',
+    color: "#818cf8",
   },
 });

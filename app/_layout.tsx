@@ -1,12 +1,14 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter } from 'expo-router';
-//import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { useFonts } from 'expo-font';
 import React, { useEffect, useState } from 'react';
-import { View, Text,StatusBar,ActivityIndicator} from 'react-native';
+import { View, Text,ActivityIndicator} from 'react-native';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider,useAuth } from '@/context/AuthContext';
+import { LoadingProvider } from '@/context/LoadingContext';
+import LoadingOverlay from '@/components/LoadingOverlay';
 
 
 export const unstable_settings = {
@@ -14,13 +16,14 @@ export const unstable_settings = {
 };
 
 function AuthGuard() {
+  debugger;
   const { userId, loading } = useAuth();
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     // checkSession bitmiş ve userId yoksa login'e gönder
-    if (!loading && !userId) {
+    if (!loading && userId === undefined) {
       router.replace("/login");
     }
   }, [loading, userId]);
@@ -40,6 +43,7 @@ function AuthGuard() {
 
   // UI ready
   return (
+    <LoadingProvider>
     <Stack
       screenOptions={{ headerTitleStyle: { fontFamily: 'Inter' } }}
       initialRouteName={userId ? '(tabs)' : 'login'}
@@ -48,6 +52,8 @@ function AuthGuard() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
     </Stack>
+      <LoadingOverlay />
+    </LoadingProvider>
   );
 }
 
@@ -58,7 +64,7 @@ export default function RootLayout() {
     InterBold: require('../assets/fonts/static/Inter_24pt-SemiBold.ttf'),
   });
 
-  if (!loaded) return null;
+  if (!loaded) return <ActivityIndicator size={'large'} />;
 
   return (
     <AuthProvider>
@@ -66,10 +72,9 @@ export default function RootLayout() {
         value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
       >
         <AuthGuard />
-        <StatusBar
-          translucent={false}
-          backgroundColor="#ffffff"
-          barStyle="dark-content"
+          <StatusBar
+          translucent={true}
+          backgroundColor="#0f0f0fff"
         />
       </ThemeProvider>
     </AuthProvider>

@@ -1,18 +1,23 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { router } from "expo-router";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import { router, useRouter } from "expo-router";
 import AuthRepository from "@/src/repositories/AuthRepository";
-import { View } from "react-native-reanimated/lib/typescript/Animated";
-import { Text } from "@react-navigation/elements";
-import Sleep from "@/src/utils/Sleep";
+import LoginService from "@/src/api/LoginService";
+import UserService from "@/src/api/UserService";
+import useUser from "@/hooks/useUser";
 
 interface AuthContextType {
   userId: string | null | undefined;
-  SetUser: (id: string) => void;
-  role:string | null |undefined;
+  role: string | null | undefined;
   loading: boolean;
   littleLoad: boolean;
-  showLoading:()=>void;
-  hideLoading:()=>void;
+  showLoading: () => void;
+  hideLoading: () => void;
   checkSession: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -20,48 +25,41 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [userId, setUserId] = useState<string | null>(null);     // user object or null
+  const [userId, setUserId] = useState<string | null>(null); // user object or null
   const [loading, setLoading] = useState(true);
-  const[littleLoad,setLittleLoad]= useState(false);
-  const [role, setRole] = useState<string | null>(null); 
+  const [littleLoad, setLittleLoad] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
 
- const SetUser =(id:string) => setUserId(id);
+  const {user} = useUser();
 
   const showLoading = useCallback(() => setLittleLoad(true), []);
   const hideLoading = useCallback(() => setLittleLoad(false), []);
 
-  // İlk yüklemede session kontrolü
+  // 🔎 Session kontrolü
   const checkSession = async () => {
     try {
-  debugger;
-      const res = {
-        success:true,
-        userId:"kmieyam",
-        role:"admin"
-      }
-      var response= await AuthRepository.me();
-     console.log("checksession > response", response);
-     console.log("checksession > Res",res);
+      debugger;
+      
+      console.log("checksession > response",user);
 
-      if (res.success) {
-        const {userId,role} = res;
-        setUserId(userId!);
-        setRole(role!)
+      if (user !==null) {
+        setUserId(user.id);
+        setRole(user.role);
       } else {
-         setUserId(null);
-        setRole(null)
-        await logout();
+        setUserId(null);
+        setRole(null);
       }
-    } catch {
-      setUserId("");
+    } catch (err) {
+      console.warn("Session check error:", err);
+      setUserId(null);
+      setRole(null);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-   useEffect(() =>{
-    
-    console.log("authcontext useEffect içinde");
-   checkSession(); // <-- BEKLET
+  useEffect(() => {
+      checkSession(); // <-- BEKLET
   }, []);
 
   const logout = async () => {
@@ -69,16 +67,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUserId("");
     setRole("");
     router.replace("/login");
-  };
-
+  }; 
 
   return (
-    <AuthContext.Provider value={{ userId,SetUser,role, loading,littleLoad,showLoading,hideLoading, checkSession, logout }}>
+    <AuthContext.Provider
+      value={{
+        userId,
+        role,
+        loading,
+        littleLoad,
+        showLoading,
+        hideLoading,
+        checkSession,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
-
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

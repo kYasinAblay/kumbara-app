@@ -1,6 +1,6 @@
 import { User } from "./User";
 
-export interface Check {
+export interface Me {
     success: boolean,
-    message:string
+    user:User
 }

@@ -24,7 +24,7 @@ export default class BaseApiService {
       }
 
       return config;
-    });
+    }); 
 
     // Cookie yakalama (login olduktan sonra)
     this.client.interceptors.response.use(
@@ -51,6 +51,11 @@ export default class BaseApiService {
 
   protected async post<T>(url: string, data?: any): Promise<T> {
     const response = await this.client.post<T>(url, data);
+    return response.data;
+  }
+
+   protected async patch<T>(url: string, data: any): Promise<T> {
+    const response = await this.client.patch<T>(url, data);
     return response.data;
   }
 
