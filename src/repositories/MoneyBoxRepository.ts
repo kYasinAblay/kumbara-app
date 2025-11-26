@@ -7,6 +7,7 @@ class MoneyBoxRepository {
   }
 
   async add(box: MoneyBox): Promise<MoneyBox> {
+    debugger;
     return await MoneyBoxService.create(box);
   }
 

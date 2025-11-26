@@ -36,7 +36,7 @@ export function MoneyBoxList({
 
  
   const cities = useMemo(
-    () => Array.from(new Set(moneyBoxes.map(b => b.city))).sort(),
+    () => Array.from(new Set(moneyBoxes.map(b => b.city?.toUpperCase()))).sort(),
     [moneyBoxes]
   );
 
@@ -46,13 +46,13 @@ export function MoneyBoxList({
         b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         b.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         b.zone.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchCity = selectedCity === 'all' || b.city === selectedCity;
+      const matchCity = selectedCity === 'all' || b.city?.toUpperCase() === selectedCity;
       return matchSearch && matchCity;
     });
 
     return filtered.sort((a:MoneyBox, b:MoneyBox) => {
       if (sortBy === 'date')
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
+        return new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime();
       if (sortBy === 'amount') return b.amount - a.amount;
       return a.name.localeCompare(b.name);
     });
@@ -60,7 +60,8 @@ export function MoneyBoxList({
 
   const grouped = useMemo(() => {
     const res: Record<string, MoneyBox[]> = {};
-    cities.forEach(c => (res[c] = filteredAndSortedBoxes.filter(b => b.city === c)));
+    cities.forEach(c => (res[c] = filteredAndSortedBoxes.filter(b => b.city?.toUpperCase() === c?.toUpperCase())));
+    console.log(cities);
     return res;
   }, [filteredAndSortedBoxes, cities]);
 
@@ -71,7 +72,7 @@ export function MoneyBoxList({
     <View style={styles.container}>
       {/* 🔍 Search bar */}
      { IsAdmin() &&
-<View style={styles.searchBar}>
+      <View style={styles.searchBar}>
         <Ionicons name="search" size={18} color="#9ca3af" style={styles.iconLeft} />
         <TextInput
           placeholder="Kumbara ara..."
@@ -83,7 +84,7 @@ export function MoneyBoxList({
           style={styles.filterButton}
           onPress={() => setFilterVisible(true)}
         >
-          <Ionicons name="options" size={18} color="#4f46e5" />
+          <Ionicons name="options" size={18} color="#016840" />
           {hasFilters && <View style={styles.activeDot} />}
         </TouchableOpacity>
       </View>
@@ -113,7 +114,7 @@ export function MoneyBoxList({
         </View>
       ) : selectedCity === 'all' ? (
         // 🏙️ Grouped by City
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} style={{marginBottom:110}}>
           {Object.entries(grouped).map(([city, boxes]) =>
             boxes.length ? (
               <View key={city} style={styles.cityGroup}>
@@ -138,7 +139,7 @@ export function MoneyBoxList({
         // 📋 Flat list when filtered
         <FlatList
           data={filteredAndSortedBoxes}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.id!}
           renderItem={({ item }) => (
             <MoneyBoxCard
               box={item}
@@ -228,7 +229,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#4f46e5',
+    backgroundColor: '#016840',
   },
   resultCount: {
     fontSize: 12,
@@ -284,7 +285,7 @@ const styles = StyleSheet.create({
   clearText: { color: '#4338ca', fontWeight: '600' },
   closeBtn: {
     marginTop: 16,
-    backgroundColor: '#4f46e5',
+    backgroundColor: '#016840',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',

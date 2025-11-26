@@ -14,5 +14,6 @@ export interface User {
   moneyboxes: MoneyBox[];
   role:string,
   is_deleted: boolean;
-  date: String;
+  created_at?: string;
+  modified_at?:string;
 }

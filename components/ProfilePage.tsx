@@ -19,19 +19,25 @@ import CityDistrictSelect from './CityDistrictSelect';
 import { getCityNameById } from '@/hooks/getCityNameById';
 import { useLoading } from '@/context/LoadingContext';
 import UserRepository from '@/src/repositories/UserRepository';
+import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
+import formatDate from '@/src/utils/DateUtils';
+import DateUtils from '@/src/utils/DateUtils';
 
 
 interface ProfilePageProps {
   user: User;
-  onUpdateUser: (data: Omit<User, "id" | "date" | "is_deleted" | "moneyboxes" | "role">) => void;
+  onUpdateUser: (data: Omit<User,"created_at"| "is_deleted" | "moneyboxes" | "role">) => void;
   onLogout?: () => void;
 }
 
 export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePageProps) {
+   const insets = useSafeAreaInsets();
+  
   const [isEditing, setIsEditing] = useState(false);
   const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
 
   const [formData, setFormData] = useState({
+    id: user.id,
     name: user.name,
     surname: user.surname,
     phone: user.phone,
@@ -53,6 +59,7 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
   const handleSubmit = () => {
 
     onUpdateUser({
+      id: formData.id,
       name: formData.name,
       surname: formData.surname,
       phone:formData.phone,
@@ -69,6 +76,7 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
 
   const handleCancel = () => {
     setFormData({
+      id: formData.id,
        name: formData.name,
       surname: formData.surname,
       phone: formData.phone,
@@ -85,17 +93,10 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
 
    showLoading();
    await onLogout?.();
-   await Sleep(1500).then(hideLoading);
+   await Sleep(1000).then(hideLoading);
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('tr-TR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    });
-  };
+
 
   const getInitials = () => {
     return `${user.name[0]}${user.surname[0]}`.toUpperCase();
@@ -108,6 +109,7 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
   if (!user) return;
 
   setFormData({
+    id:user.id,
     name: user.name,
     surname: user.surname,
     phone: user.phone,
@@ -120,7 +122,7 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
 }, [user]);
 
   return (
- 
+  <SafeAreaView edges={["top"]} style={[styles.safeArea,{paddingTop: insets.top * -0.25}]}>
     <ScrollView style={styles.container}>
        {/* HEADER */}
       
@@ -135,13 +137,13 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
               style={styles.logoutButton}
               onPress={() => setIsLogoutModalVisible(true)}
             >
-              <Feather name="log-out" size={18} color="red" />
+              <Feather name="log-out" size={18} color="#FA8072" />
               <Text style={styles.logoutText}>Çıkış</Text>
             </TouchableOpacity>
           )}
         </View>
       {/* PROFIL KARTI */}
-      <View style={[styles.card,{marginTop:-15}]}>
+      <View style={[styles.card]}>
         <View style={styles.profileHeader}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>{getInitials()}</Text>
@@ -152,7 +154,7 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
             </Text>
             <Text style={styles.memberText}>
               <Ionicons name="calendar-outline" size={14} /> Üyelik:{' '}
-              {formatDate(user.date?.toString())}
+              {DateUtils.formatDate(user.created_at!.toString())}
             </Text>
           </View>
 
@@ -233,8 +235,9 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
               <TextInput
                 value={formData.address}
                 onChangeText={(v) => handleChange('address', v)}
-                style={[styles.input, { height: 80, }]}
+                style={[styles.input,styles.textarea, { height: 80, }]}
                 multiline
+                numberOfLines={4}
               />
             </View>
 
@@ -312,7 +315,7 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
     {/* Aktif Kumbara */}
     <View style={styles.statRow}>
       <Text style={styles.statLabel}>Aktif Kumbara</Text>
-      <View style={[styles.badge, { backgroundColor: "#4f46e5" }]}>
+      <View style={[styles.badge, { backgroundColor: "#016840" }]}>
         <Text style={styles.badgeText}>{activeMoneyboxes.length}</Text>
       </View>
     </View>
@@ -339,7 +342,7 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
 </Card>
 
     
-      <Card style={{marginTop:20,marginBottom:70}}>
+  <Card style={{marginTop:20,marginBottom:30}}>
   <CardHeader>
     <CardTitle style={{ color: "#1e1b4b", fontSize: 14 }}>Hesap Bilgileri</CardTitle>
   </CardHeader>
@@ -355,7 +358,7 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
     {/* DATE */}
     <View style={{ marginBottom: 10 }}>
       <Text style={styles.infoLabel}>Kayıt Tarihi</Text>
-      <Text style={styles.infoValue}>{formatDate(user.date?.toString())}</Text>
+      <Text style={styles.infoValue}>{DateUtils.formatDate(user.created_at!)}</Text>
     </View>
 
     {/* STATUS */}
@@ -401,15 +404,19 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
       </Modal>
 
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: 'transparent'
+  },
   container: {
     flex: 1,
     backgroundColor: '#eef2ff',
-    padding: 16,
-    paddingTop: 50,
+    padding: 16
   },
    header: { flexDirection: "row", justifyContent: "space-between", marginBottom: 20 },
   headerTitle: {
@@ -418,8 +425,7 @@ const styles = StyleSheet.create({
     color: '#312e81',
   },
   headerSubtitle: {
-    color: '#6366f1',
-    marginBottom: 16,
+    color: '#6366f1'
   },
    logoutButton: {
     flexDirection: "row",
@@ -431,7 +437,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height:40
   },
-  logoutText: { color: "red", marginLeft: 6 },
+  logoutText: { color: "#FA8072", marginLeft: 6 },
   card: {
     backgroundColor: '#fff',
     borderRadius: 12,
@@ -461,7 +467,7 @@ const styles = StyleSheet.create({
   memberText: { color: '#6366f1', fontSize: 12 },
   editButton: {
     flexDirection: 'row',
-    backgroundColor: '#4f46e5',
+    backgroundColor: '#016840',
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 8,
@@ -477,6 +483,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 14,
+  },
+  textarea:{
+    height:80,
+    textAlignVertical: 'top',
   },
    rowInput: {
     borderWidth: 1,
@@ -502,7 +512,7 @@ const styles = StyleSheet.create({
   saveButton: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: '#4f46e5',
+    backgroundColor: '#016840',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
@@ -531,9 +541,9 @@ const styles = StyleSheet.create({
     borderColor: '#e5e7eb',
   },
   boxName: { color: '#111827' },
-  boxAmount: { color: '#4f46e5', fontWeight: '600' },
+  boxAmount: { color: '#016840', fontWeight: '600' },
   summaryCard: {
-    backgroundColor: '#4f46e5',
+    backgroundColor: '#016840',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',

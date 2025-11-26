@@ -36,7 +36,7 @@ export default function ExploreScreen() {
       ...boxData,
       id: Date.now().toString(),
       is_deleted: false,
-      date: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     };
     setMoneyBoxes(prev => [...prev, newBox]);
     setIsDialogOpen(false);
@@ -92,7 +92,7 @@ export default function ExploreScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        {/* <Ionicons name="piggy-bank" size={36} color="#4f46e5" /> */}
+        {/* <Ionicons name="piggy-bank" size={36} color="#016840" /> */}
         <View>
           <Text style={styles.title}>Money Box Manager</Text>
           <Text style={styles.subtitle}>Manage your savings across locations</Text>
@@ -135,11 +135,11 @@ const styles = StyleSheet.create({
   header: 
   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
   title: 
-  { fontSize: 20, fontWeight: '600', color: '#1e1b4b' },
+  { fontSize: 20, fontWeight: '600', color: '#312e81' },
   subtitle:
-   { color: '#4f46e5' },
+   { color: '#312e81' },
   addButton:
-   { backgroundColor: '#4f46e5', padding: 10, borderRadius: 8 },
+   { backgroundColor: '#016840', padding: 10, borderRadius: 8 },
   box:
    { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', padding: 12, borderRadius: 8, marginBottom: 8 },
   boxTitle:

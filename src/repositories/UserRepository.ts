@@ -3,11 +3,11 @@ import { User } from "../models/User";
 
 
 class UserRepository {
-  // async fetchAll(): Promise<User[]> {
-  //   return await UserService.getList();
-  // }
+  async fetchAll(): Promise<User[]> {
+    return await UserService.getList();
+  }
 
-  async update(user: Omit<User, "id" | "date" | "is_deleted" | "moneyboxes" | "role">): Promise<User> {
+  async update(user: Omit<User, "created_at" | "is_deleted" | "moneyboxes" | "role">): Promise<User> {
     return await UserService.update(user);
   }
 

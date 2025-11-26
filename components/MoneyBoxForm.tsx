@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState,memo } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { MoneyBox } from '../src/models/MoneyBox';
+import IsAdmin from '@/hooks/useAuthorization';
+import UserSelect from './UserSelect';
 
 interface MoneyBoxFormProps {
   initialData?: MoneyBox;
@@ -8,57 +10,66 @@ interface MoneyBoxFormProps {
   onCancel: () => void;
 }
 
-export function MoneyBoxForm({ initialData, onSubmit, onCancel }: MoneyBoxFormProps) {
+ function MoneyBoxFormFunc({ initialData, onSubmit, onCancel }: MoneyBoxFormProps) {
   const [formData, setFormData] = useState({
     city: initialData?.city || '',
     zone: initialData?.zone || '',
     name: initialData?.name || '',
-    amount: initialData?.amount?.toString() || '0',
+    amount: initialData?.amount?.toString() || '',
     description: initialData?.description || '',
+    userId:initialData?.user_id || ''
   });
 
+  console.log(initialData);
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = () => {
-    if (!formData.name || !formData.city || !formData.zone) return;
+    if (!formData.name  || !formData.zone) return;
     onSubmit({
       city: formData.city,
       zone: formData.zone,
       name: formData.name,
       amount: parseFloat(formData.amount) || 0,
       description: formData.description,
+      user_id:formData.userId
     });
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Name */}
-      <View style={styles.field}>
-        <Text style={styles.label}>Money Box Name *</Text>
+      <View style={styles.field} >
+        <Text style={styles.label} >Kumbara Adı</Text>
         <TextInput
           style={styles.input}
-          placeholder="e.g., Emergency Fund"
+          placeholder="örn. Kermes Kumbarası"
           value={formData.name}
           onChangeText={(text) => handleChange('name', text)}
         />
       </View>
-
+      {IsAdmin() &&  <View style={[styles.field,{width:"100%"}]}>
+        <Text style={styles.label}>Kullanıcı *</Text>
+        <UserSelect
+          userId={formData.userId}
+          handleChange={handleChange}
+        />
+      </View>
+      }
+   
       {/* City and Zone */}
-      <View style={styles.row}>
-        <View style={[styles.field, styles.flex1]}>
-          <Text style={styles.label}>City *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="e.g., Istanbul"
-            value={formData.city}
-            onChangeText={(text) => handleChange('city', text)}
-          />
+      <View style={styles.row} >
+        <View style={[styles.field, styles.flex1]} >
+          <Text style={styles.label}>Şehir</Text>
+       <Text
+            style={[styles.input,{backgroundColor:"#DADADA"}]}
+            disabled={true}
+          >{formData.city}</Text>
         </View>
 
         <View style={[styles.field, styles.flex1]}>
-          <Text style={styles.label}>Zone *</Text>
+          <Text style={styles.label}>Bölge *</Text>
           <TextInput
             style={styles.input}
             placeholder="e.g., Kadıköy"
@@ -70,7 +81,7 @@ export function MoneyBoxForm({ initialData, onSubmit, onCancel }: MoneyBoxFormPr
 
       {/* Amount */}
       <View style={styles.field}>
-        <Text style={styles.label}>Initial Amount *</Text>
+        <Text style={styles.label}>Tutar *</Text>
         <TextInput
           style={styles.input}
           placeholder="0.00"
@@ -82,16 +93,17 @@ export function MoneyBoxForm({ initialData, onSubmit, onCancel }: MoneyBoxFormPr
 
       {/* Description */}
       <View style={styles.field}>
-        <Text style={styles.label}>Description</Text>
+        <Text style={styles.label}>Açıklama</Text>
         <TextInput
           style={[styles.input, styles.textarea]}
-          placeholder="Add notes about this money box..."
+          placeholder="Kumbara hakkında birşeyler yazabilirsiniz."
           value={formData.description}
           onChangeText={(text) => handleChange('description', text)}
           multiline
           numberOfLines={4}
         />
       </View>
+      
 
       {/* Buttons */}
       <View style={styles.buttonRow}>
@@ -100,7 +112,7 @@ export function MoneyBoxForm({ initialData, onSubmit, onCancel }: MoneyBoxFormPr
           style={[styles.button, styles.submitButton]}
         >
           <Text style={styles.buttonText}>
-            {initialData ? 'Update' : 'Create'} Money Box
+           Kumbara {initialData?.zone !=="" ? 'Güncelle' : 'Oluştur'} 
           </Text>
         </TouchableOpacity>
 
@@ -108,12 +120,23 @@ export function MoneyBoxForm({ initialData, onSubmit, onCancel }: MoneyBoxFormPr
           onPress={onCancel}
           style={[styles.button, styles.cancelButton]}
         >
-          <Text style={[styles.buttonText, { color: '#4f46e5' }]}>Cancel</Text>
+          <Text style={[styles.buttonText, { color: '#016840' }]}>İptal</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
   );
 }
+
+
+export const MoneyBoxForm = memo(MoneyBoxFormFunc, (prevProps, nextProps) => {
+
+  return (
+    prevProps.initialData?.id === nextProps.initialData?.id &&
+    prevProps.initialData?.name === nextProps.initialData?.name &&
+    prevProps.onSubmit === nextProps.onSubmit &&
+    prevProps.onCancel === nextProps.onCancel
+  );
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -162,7 +185,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   submitButton: {
-    backgroundColor: '#4f46e5',
+    backgroundColor: '#016840',
   },
   cancelButton: {
     backgroundColor: '#e0e7ff',

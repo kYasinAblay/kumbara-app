@@ -17,36 +17,7 @@ class AuthRepository {
   }
 
   async me(): Promise<Me> {
-    try {
-      debugger;
-      var deneme = await LoginService.me();
-      console.log(deneme);
-
-
-      return await LoginService.me();
-    } catch (error) {
-      console.log(error);
-      return {
-        success: false,
-        user:{
-          address:"",
-          city:1,
-          date:"",
-          district:"",
-          moneyboxes:[],
-          name:"",
-          surname:"",
-          phone:"",
-          role:"",
-          zone:"",
-          username:"",
-          picture:"",
-          is_deleted:false,
-          id:"",
-        },
-      };
-    }
-
+  return await LoginService.me();
   }
 
     async check(): Promise<Check> {

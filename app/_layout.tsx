@@ -16,7 +16,7 @@ export const unstable_settings = {
 };
 
 function AuthGuard() {
-  debugger;
+
   const { userId, loading } = useAuth();
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
@@ -45,7 +45,9 @@ function AuthGuard() {
   return (
     <LoadingProvider>
     <Stack
-      screenOptions={{ headerTitleStyle: { fontFamily: 'Inter' } }}
+      screenOptions={{  
+          contentStyle: { backgroundColor: '#fff' },
+          headerTitleStyle: { fontFamily: 'Inter' } }}
       initialRouteName={userId ? '(tabs)' : 'login'}
     >
       <Stack.Screen name="login" options={{ headerShown: false }} />
@@ -73,8 +75,9 @@ export default function RootLayout() {
       >
         <AuthGuard />
           <StatusBar
+          style="dark" 
           translucent={true}
-          backgroundColor="#0f0f0fff"
+          backgroundColor="#742020ff"
         />
       </ThemeProvider>
     </AuthProvider>

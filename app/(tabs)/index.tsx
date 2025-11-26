@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,8 @@ import {
   ScrollView,
   TextInput,
   FlatList,
-  Modal
+  Modal,
+  ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,54 +24,81 @@ import {
 } from '../../components/ui/Dialog';
 import { MoneyBox } from '../../src/models/MoneyBox';
 import { MoneyBoxList } from '../../components/MoneyBoxList';
+import MoneyBoxRepository from '@/src/repositories/MoneyBoxRepository';
+import useUser from '@/hooks/useUser';
+import { getCityNameById } from '@/hooks/getCityNameById';
 
 
 export default function HomeScreen() {
-const [moneyBoxes, setMoneyBoxes] = useState<MoneyBox[]>([]);
+  const [moneyBoxes, setMoneyBoxes] = useState<MoneyBox[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBox, setEditingBox] = useState<MoneyBox | null>(null);
 
+  const {user,loading,updateUser} = useUser();
   // 📦 Load data
   useEffect(() => {
     const loadData = async () => {
-      const saved = await AsyncStorage.getItem('moneyboxes');
-      if (saved) setMoneyBoxes(JSON.parse(saved));
+      //  const saved = await AsyncStorage.getItem('moneyboxes');
+      //  if (saved) setMoneyBoxes(JSON.parse(saved));
+      setMoneyBoxes(user.moneyboxes.filter(box => !box.is_deleted));
     };
-    loadData();
-  }, []);
+    loadData();    
 
+  }, [user.moneyboxes]);
+
+  
   // 💾 Save data
   useEffect(() => {
     AsyncStorage.setItem('moneyboxes', JSON.stringify(moneyBoxes));
   }, [moneyBoxes]);
+   
+  useEffect(() => { 
 
-  const handleCreateBox = (boxData: Omit<MoneyBox, 'id' | 'is_deleted' | 'date'>) => {
+    setEditingBox({
+      name:"",
+      amount:0,
+      description:"",
+      zone:"",
+      is_deleted:false,
+      city:getCityNameById(user.city),
+      user_id:user.id}); 
+  }, [user]); 
+
+
+  const handleCreateBox = useCallback(async (boxData: Omit<MoneyBox, 'id' | 'is_deleted' | 'created_at'>) => {
     const newBox: MoneyBox = {
       ...boxData,
-      id: Date.now().toString(),
+      // id: Date.now().toString(),
       is_deleted: false,
-      date: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      user_id:user.id
     };
     setMoneyBoxes(prev => [...prev, newBox]);
+    debugger;
+    await MoneyBoxRepository.add(newBox);
+    alert("kumbara kaydet");
     setIsDialogOpen(false);
-  };
+  },[user.id]);
 
-  const handleUpdateBox = (boxData: Omit<MoneyBox, 'id' | 'is_deleted' | 'date'>) => {
+  const handleUpdateBox = useCallback((boxData: Omit<MoneyBox, 'id' | 'is_deleted' | 'created_at'>) => {
     if (editingBox) {
+      console.log("handle updatebox",editingBox);
       setMoneyBoxes(prev =>
         prev.map(box =>
           box.id === editingBox.id ? { ...box, ...boxData } : box
         )
       );
-      setEditingBox(null);
+      
+     MoneyBoxRepository.add(boxData);
       setIsDialogOpen(false);
     }
-  };
+  }, [editingBox]);
 
-  const handleDeleteBox = (id: string) => {
+  const handleDeleteBox = async (id: string) => {
     setMoneyBoxes(prev =>
-      prev.map(box => (box.id === id ? { ...box, is_deleted: true } : box))
+      prev.map(box => (box.id === id ? { ...box, is_deleted: true } : box)).filter(box => box.id !== id)
     );
+   await MoneyBoxRepository.remove(id);
   };
 
   const handleUpdateAmount = (id: string, newAmount: number) => {
@@ -86,18 +114,21 @@ const [moneyBoxes, setMoneyBoxes] = useState<MoneyBox[]>([]);
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
-    setEditingBox(null);
+    // setEditingBox(null);
   };
 
-  const activeBoxes = moneyBoxes.filter(box => !box.is_deleted);
+
+
+  if (loading) return(
+   <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+     <ActivityIndicator size={"large"} style={{marginTop:-50}} />  
+     </View>
+     );
+
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={{ paddingBottom: 40 }}
-      >
-        {/* Header */}
+    <SafeAreaView style={[styles.safeArea ,styles.container]}>
+              {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <View style={styles.logoBox}>
@@ -118,16 +149,16 @@ const [moneyBoxes, setMoneyBoxes] = useState<MoneyBox[]>([]);
         </View>
 
         {/* Dashboard */}
-        <Dashboard moneyBoxes={activeBoxes} />
+        <Dashboard moneyBoxes={moneyBoxes} />
 
         {/* Money Box List */}
         <MoneyBoxList
-          moneyBoxes={activeBoxes}
+          moneyBoxes={moneyBoxes}
           onDelete={handleDeleteBox}
           onEdit={handleEdit}
           onUpdateAmount={handleUpdateAmount}
         />
-      </ScrollView>
+      
 
       {/* Dialog for Create/Edit */}
       <Dialog visible={isDialogOpen} onClose={handleCloseDialog}>
@@ -137,11 +168,12 @@ const [moneyBoxes, setMoneyBoxes] = useState<MoneyBox[]>([]);
               {editingBox ? 'Kumbara Düzenle' : 'Yeni Kumbara Oluştur'}
             </DialogTitle>
           </DialogHeader>
-          <MoneyBoxForm
+          { loading ? <ActivityIndicator size={'large'} /> :
+            <MoneyBoxForm
             initialData={editingBox || undefined}
             onSubmit={editingBox ? handleUpdateBox : handleCreateBox}
             onCancel={handleCloseDialog}
-          />
+          />}
         </DialogContent>
       </Dialog>
     </SafeAreaView>
@@ -162,7 +194,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -170,25 +202,25 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   logoBox: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     borderRadius: 10,
-    backgroundColor: '#6366f1', // from-indigo-600
+    backgroundColor: '#C9AD63', // from-indigo-600 #6366f1
     alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
-    color: '#312e81', // text-indigo-900
+    color: '#312e81', // text-indigo-900 #312e81 eski renk tonu 
     fontSize: 18,
     fontWeight: '700',
   },
   subtitle: {
-    color: '#4f46e5',
+    color: '#312e81',
     fontSize: 12,
   },
   addButton: {
     flexDirection: 'row',
-    backgroundColor: '#4f46e5',
+    backgroundColor: '#016840',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,

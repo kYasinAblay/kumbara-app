@@ -18,7 +18,7 @@ export const MoneyBox: React.FC<MoneyBoxProps> = ({ balance, goal }) => {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>
-          {/* <Ionicons name="piggy-bank-outline" size={20} color="#4f46e5" /> Your Savings */}
+          {/* <Ionicons name="piggy-bank-outline" size={20} color="#016840" /> Your Savings */}
         </Text>
       </View>
 
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   progressLabel: {
     textAlign: 'center',
     fontSize: 13,
-    color: '#4f46e5',
+    color: '#016840',
     marginTop: 4,
   },
   goalReached: {
@@ -155,6 +155,6 @@ const styles = StyleSheet.create({
   remainingText: {
     textAlign: 'center',
     fontSize: 13,
-    color: '#4f46e5',
+    color: '#016840',
   },
 });

@@ -1,10 +1,12 @@
 export interface MoneyBox {
-  id: string;
+  id?: string;
   zone: string;
   name: string;
+  city?: string;
   amount: number;
   description: string;
-  is_deleted: boolean;
-  date: string;
-  user_id:string;
+  is_deleted?: boolean;
+  created_at?: string;
+  modified_at?:string;
+  user_id?:string;
 }

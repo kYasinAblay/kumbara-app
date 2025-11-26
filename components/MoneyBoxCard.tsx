@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,10 +6,11 @@ import {
   TouchableOpacity,
   TextInput,
   Modal,
-} from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { MoneyBox } from '../src/models/MoneyBox';
-import { AlertDialog } from './ui/AlertDialog';
+} from "react-native";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { MoneyBox } from "../src/models/MoneyBox";
+import { AlertDialog } from "./ui/AlertDialog";
+import DateUtils from "@/src/utils/DateUtils";
 
 interface Props {
   box: MoneyBox;
@@ -26,18 +27,19 @@ export const MoneyBoxCard: React.FC<Props> = ({
 }) => {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isTransaction, setIsTransaction] = useState(false);
-  const [amountText, setAmountText] = useState('');
+  const [amountText, setAmountText] = useState("");
 
-  const handleTransaction = (type: 'add' | 'sub') => {
+  const handleTransaction = (type: "add" | "sub") => {
     const val = parseFloat(amountText);
     if (!val || val <= 0) return;
-    const newAmount = type === 'add' ? box.amount + val : Math.max(0, box.amount - val);
-    onUpdateAmount(box.id, newAmount);
+    const newAmount =
+      type === "add" ? box.amount + val : Math.max(0, box.amount - val);
+    onUpdateAmount(box.id!, newAmount);
     setIsTransaction(false);
-    setAmountText('');
+    setAmountText("");
   };
 
- //const dateStr = new Date(box.date).toLocaleDateString('tr-TR');
+  //const dateStr = new Date(box.date).toLocaleDateString('tr-TR');
 
   return (
     <>
@@ -74,7 +76,11 @@ export const MoneyBoxCard: React.FC<Props> = ({
         {/* Content */}
         <View style={styles.content}>
           <View style={styles.locationRow}>
-            <MaterialCommunityIcons name="map-marker" size={16} color="#4f46e5" />
+            <MaterialCommunityIcons
+              name="map-marker"
+              size={16}
+              color="#016840"
+            />
             <View style={{ flex: 1 }}>
               <Text style={styles.city}>{box.city}</Text>
               {box.description ? (
@@ -87,7 +93,9 @@ export const MoneyBoxCard: React.FC<Props> = ({
 
           <View style={styles.dateRow}>
             <Ionicons name="calendar-outline" size={14} color="#9ca3af" />
-            {/* <Text style={styles.date}>{dateStr}</Text> */}
+            <Text style={styles.date}>
+              {DateUtils.formatDate(box.created_at!)}
+            </Text>
           </View>
 
           {isTransaction ? (
@@ -101,15 +109,15 @@ export const MoneyBoxCard: React.FC<Props> = ({
               />
               <View style={styles.txButtons}>
                 <TouchableOpacity
-                  style={[styles.txBtn, { backgroundColor: '#16a34a' }]}
-                  onPress={() => handleTransaction('add')}
+                  style={[styles.txBtn, { backgroundColor: "#16a34a" }]}
+                  onPress={() => handleTransaction("add")}
                 >
                   <Ionicons name="add" size={16} color="#fff" />
                   <Text style={styles.txBtnText}>Ekle</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.txBtn, { backgroundColor: '#dc2626' }]}
-                  onPress={() => handleTransaction('sub')}
+                  style={[styles.txBtn, { backgroundColor: "#dc2626" }]}
+                  onPress={() => handleTransaction("sub")}
                 >
                   <Ionicons name="remove" size={16} color="#fff" />
                   <Text style={styles.txBtnText}>Çıkar</Text>
@@ -119,7 +127,7 @@ export const MoneyBoxCard: React.FC<Props> = ({
                 style={styles.cancelTx}
                 onPress={() => {
                   setIsTransaction(false);
-                  setAmountText('');
+                  setAmountText("");
                 }}
               >
                 <Text style={styles.cancelTxText}>İptal</Text>
@@ -144,90 +152,119 @@ export const MoneyBoxCard: React.FC<Props> = ({
         description={`"${box.name}" kumbarasını silmek istiyor musunuz? Bu işlem geri alınamaz.`}
         confirmText="Sil"
         cancelText="İptal"
-        onConfirm={() => onDelete(box.id)}
+        onConfirm={() => {
+          alert(box.id);
+          onDelete(box.id!);
+        }}
       />
     </>
   );
 };
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
-    borderColor: '#e5e7eb',
+    backgroundColor: "#fff",
+    borderColor: "#e5e7eb",
     borderWidth: 1,
     borderRadius: 12,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: 14,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowRadius: 3,
     elevation: 2,
   },
   header: {
-    backgroundColor: '#4f46e5',
+    backgroundColor: "#016840",
     padding: 12,
   },
   headerTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 8,
   },
-  left: { flexDirection: 'row', alignItems: 'center', flex: 1, gap: 6 },
+  left: { flexDirection: "row", alignItems: "center", flex: 1, gap: 6 },
   iconCircle: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: 8,
   },
-  boxName: { color: '#fff', fontWeight: '600', fontSize: 15 },
-  zone: { color: 'rgba(255,255,255,0.8)', fontSize: 12 },
-  actions: { flexDirection: 'row', gap: 10 },
+  boxName: { color: "#fff", fontWeight: "600", fontSize: 15 },
+  zone: { color: "rgba(255,255,255,0.8)", fontSize: 12 },
+  actions: { flexDirection: "row", gap: 10 },
   amountBox: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: "rgba(255,255,255,0.15)",
     borderRadius: 8,
     paddingVertical: 6,
-    alignItems: 'center',
+    alignItems: "center",
   },
-  amountLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 11 },
-  amountValue: { color: '#fff', fontSize: 20, fontWeight: '700' },
+  amountLabel: { color: "rgba(255,255,255,0.8)", fontSize: 11 },
+  amountValue: { color: "#fff", fontSize: 20, fontWeight: "700" },
   content: { padding: 12 },
-  locationRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4 },
-  city: { color: '#111827', fontSize: 13 },
-  desc: { color: '#6b7280', fontSize: 11 },
-  dateRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
-  date: { color: '#6b7280', fontSize: 11 },
-  txContainer: { marginTop: 8, borderTopWidth: 1, borderTopColor: '#e5e7eb', paddingTop: 8 },
+  locationRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 4,
+  },
+  city: { color: "#111827", fontSize: 13 },
+  desc: { color: "#6b7280", fontSize: 11 },
+  dateRow: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 },
+  date: { color: "#6b7280", fontSize: 11 },
+  txContainer: {
+    marginTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#e5e7eb",
+    paddingTop: 8,
+  },
   input: {
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: "#e5e7eb",
     borderRadius: 8,
     padding: 8,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 14,
     marginBottom: 6,
   },
-  txButtons: { flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
+  txButtons: { flexDirection: "row", justifyContent: "space-between", gap: 8 },
   txBtn: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     paddingVertical: 8,
     borderRadius: 8,
     gap: 4,
   },
-  txBtnText: { color: '#fff', fontWeight: '600', fontSize: 13 },
-  cancelTx: { marginTop: 4 },
-  cancelTxText: { textAlign: 'center', color: '#6b7280', fontSize: 12 },
+  txBtnText: { color: "#fff", fontWeight: "600", fontSize: 13 },
+  cancelTx: {
+    marginTop: 5,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cancelTxText: {
+    textAlign: "center",
+    justifyContent: "center",
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 10,
+    borderStyle: "solid",
+    padding: 4,
+    width: "60%",
+    color: "#534949ff",
+    fontSize: 12,
+    fontWeight: 800,
+  },
   txToggle: {
     borderWidth: 1,
-    borderColor: '#c7d2fe',
+    borderColor: "#c7d2fe",
     borderRadius: 8,
     paddingVertical: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 8,
   },
-  txToggleText: { color: '#4f46e5', fontWeight: '600', fontSize: 13 },
+  txToggleText: { color: "#016840", fontWeight: "600", fontSize: 13 },
 });

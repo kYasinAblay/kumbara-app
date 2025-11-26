@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import UserService from "../src/api/UserService";
 import { User } from "../src/models/User";
+import Sleep from "@/src/utils/Sleep";
 
 export default function useUser() {
     const [user, setUser] = useState<User>({
@@ -17,22 +18,23 @@ export default function useUser() {
         moneyboxes: [],
         role: "",
         is_deleted: false,
-        date: ""
+        created_at: ""
     });
+
     const [loading, setLoading] = useState(true);
 
     const fetchUser = async () => {
         try {
             const data = await UserService.getMe();
-            setUser(data.user);
+            await setUser(data.user);
         } catch (error) {
             console.log("User fetch error:", error);
         } finally {
-            setLoading(false);
+          Sleep(1000).then(()=>setLoading(false));
         }
     };
 
-    const updateUser = (data: Omit<User, "id" | "date" | "is_deleted" | "moneyboxes" | "role">) => {
+    const updateUser = (data: Omit<User, "created_at" | "is_deleted" | "moneyboxes" | "role">) => {
         setUser((prev) => ({ ...prev, ...data }));
     };
 

@@ -12,7 +12,7 @@ export function Dashboard({ moneyBoxes }: DashboardProps) {
   const totalAmount = moneyBoxes.reduce((sum, box) => sum + box.amount, 0);
   const totalBoxes = moneyBoxes.length;
 
-  const cities = new Set(moneyBoxes.map(box => box.city));
+  const cities = new Set(moneyBoxes.map(box => box.city?.toUpperCase()));
   const totalCities = cities.size;
 
 
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
   cardTitle: { fontSize: 20, color: '#6b7280', marginLeft: 4 },
-  cardValue: { fontSize: 36, fontWeight: '700', color: '#312e81' },
+  cardValue: { fontSize: 36, fontWeight: '700', color: '#016840' },
   cardSubtitle: { fontSize: 18, color: '#9ca3af' },
   breakdownCard: {
     backgroundColor: '#fff',

@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f4f6', // gray-100
   },
   confirm: {
-    backgroundColor: '#4f46e5', // indigo-600
+    backgroundColor: '#016840', // indigo-600
   },
   cancelText: {
     color: '#374151', // gray-700

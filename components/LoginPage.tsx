@@ -14,6 +14,7 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import authRepository from "@/src/repositories/AuthRepository";
 import { useLoading } from "@/context/LoadingContext";
+import Sleep from "@/src/utils/Sleep";
 
 
 export default function LoginPage({ onLogin }) {
@@ -27,8 +28,8 @@ export default function LoginPage({ onLogin }) {
 
   const handleLogin = async () => {
     try {
-      debugger;
-      console.log(loginData);
+      showLoading();
+      console.log(loginData); 
       var check = await authRepository.login(loginData);
 
       if (check.success !== undefined && check.success) {
@@ -40,6 +41,7 @@ export default function LoginPage({ onLogin }) {
       console.error(err);
       Alert.alert("Hata", "Giriş işlemi sırasında bir hata oluştu.");
     }
+    await Sleep(1000).then(hideLoading);
   };
 
   return (
@@ -110,7 +112,8 @@ export default function LoginPage({ onLogin }) {
               onPress={handleLogin}
             >
               {loading ? (
-                <ActivityIndicator color="#fff" style={{ width: 40 }} />
+                
+                <ActivityIndicator style={{ width: 40 }} color="#fff" />
               ) : (
                 <Text style={styles.loginButtonText}>Giriş Yap</Text>
               )}
@@ -146,7 +149,7 @@ const styles = StyleSheet.create({
   logoCircle: {
     width: 72,
     height: 72,
-    backgroundColor: "#4f46e5",
+    backgroundColor: "#C8AC63",
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
@@ -212,7 +215,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   loginButton: {
-    backgroundColor: "#4f46e5",
+    backgroundColor: "#016840",
     marginTop: 20,
     paddingVertical: 12,
     borderRadius: 10,

@@ -12,7 +12,7 @@ export function Dashboard({ moneyBoxes }: DashboardProps) {
   const totalAmount = moneyBoxes.reduce((sum, box) => sum + box.amount, 0);
   const totalBoxes = moneyBoxes.length;
 
-  const cities = new Set(moneyBoxes.map(box => box.city));
+  const cities = new Set(moneyBoxes.map(box=>box.city?.toUpperCase()));
   const totalCities = cities.size;
 
   const cityBreakdown = Array.from(cities)
@@ -44,7 +44,7 @@ export function Dashboard({ moneyBoxes }: DashboardProps) {
                 ]}
               >
                 <View style={styles.cityLeft}>
-                  <Ionicons name="location-outline" size={16} color="#4f46e5" />
+                  <Ionicons name="location-outline" size={16} color="#016840" />
                   <View>
                     <Text style={styles.cityName}>{city}</Text>
                     <Text style={styles.cityCount}>{count} kumbara</Text>
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: '#312e81',
-    marginBottom: 6,
+    marginBottom: 0,
   },
   cityRow: {
     flexDirection: 'row',
