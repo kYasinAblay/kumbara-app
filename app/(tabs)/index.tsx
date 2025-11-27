@@ -40,6 +40,7 @@ export default function HomeScreen() {
     const loadData = async () => {
       //  const saved = await AsyncStorage.getItem('moneyboxes');
       //  if (saved) setMoneyBoxes(JSON.parse(saved));
+      console.log("load data in index.tsx",user.moneyboxes);
       setMoneyBoxes(user.moneyboxes.filter(box => !box.is_deleted));
     };
     loadData();    
@@ -55,6 +56,7 @@ export default function HomeScreen() {
   useEffect(() => { 
 
     setEditingBox({
+      id:0,
       name:"",
       amount:0,
       description:"",
@@ -66,6 +68,7 @@ export default function HomeScreen() {
 
 
   const handleCreateBox = useCallback(async (boxData: Omit<MoneyBox, 'id' | 'is_deleted' | 'created_at'>) => {
+
     const newBox: MoneyBox = {
       ...boxData,
       // id: Date.now().toString(),
@@ -73,35 +76,36 @@ export default function HomeScreen() {
       created_at: new Date().toISOString(),
       user_id:user.id
     };
-    setMoneyBoxes(prev => [...prev, newBox]);
-    debugger;
-    await MoneyBoxRepository.add(newBox);
-    alert("kumbara kaydet");
-    setIsDialogOpen(false);
-  },[user.id]);
 
-  const handleUpdateBox = useCallback((boxData: Omit<MoneyBox, 'id' | 'is_deleted' | 'created_at'>) => {
+    const response = await MoneyBoxRepository.add(boxData)
+     .catch((err)=> {console.warn("Kayıt yapılamadı!"); return;});
+
+     newBox.id = response.moneyboxes?.id;
+    setMoneyBoxes(prev => [...prev, newBox]);
+    setIsDialogOpen(false);
+  },[editingBox]);
+
+  const handleUpdateBox = useCallback((boxData: Omit<MoneyBox, 'is_deleted' | 'created_at'>) => {
     if (editingBox) {
-      console.log("handle updatebox",editingBox);
       setMoneyBoxes(prev =>
         prev.map(box =>
           box.id === editingBox.id ? { ...box, ...boxData } : box
         )
       );
-      
-     MoneyBoxRepository.add(boxData);
+     console.log("update edilen data",boxData);
+     MoneyBoxRepository.update(boxData);
       setIsDialogOpen(false);
     }
   }, [editingBox]);
 
-  const handleDeleteBox = async (id: string) => {
+  const handleDeleteBox = async (id: number) => {
     setMoneyBoxes(prev =>
       prev.map(box => (box.id === id ? { ...box, is_deleted: true } : box)).filter(box => box.id !== id)
     );
    await MoneyBoxRepository.remove(id);
   };
 
-  const handleUpdateAmount = (id: string, newAmount: number) => {
+  const handleUpdateAmount = (id: number, newAmount: number) => {
     setMoneyBoxes(prev =>
       prev.map(box => (box.id === id ? { ...box, amount: newAmount } : box))
     );
@@ -114,7 +118,14 @@ export default function HomeScreen() {
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
-    // setEditingBox(null);
+    setEditingBox(prev => ({...prev,
+      id:0,
+      name:"",
+      amount:0,
+      description:"",
+      zone:"",
+      is_deleted:false
+    }));
   };
 
 
@@ -171,7 +182,7 @@ export default function HomeScreen() {
           { loading ? <ActivityIndicator size={'large'} /> :
             <MoneyBoxForm
             initialData={editingBox || undefined}
-            onSubmit={editingBox ? handleUpdateBox : handleCreateBox}
+            onSubmit={editingBox?.id! >0 ? handleUpdateBox : handleCreateBox}
             onCancel={handleCloseDialog}
           />}
         </DialogContent>

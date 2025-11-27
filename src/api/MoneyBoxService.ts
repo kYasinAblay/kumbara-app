@@ -2,8 +2,8 @@ import BaseApiService from "./BaseApiService";
 import { MoneyBox } from "../models/MoneyBox";
 
 class MoneyBoxService extends BaseApiService {
-  async getList(params?:string[]): Promise<MoneyBox[]> {
-    
+  async getList(params?: string[]): Promise<MoneyBox[]> {
+
     var request = await this.get<MoneyBox[]>("moneyboxlist");
     return request;
   }
@@ -13,25 +13,41 @@ class MoneyBoxService extends BaseApiService {
   }
 
   async create(box: MoneyBox): Promise<MoneyBox> {
-    debugger;
     try {
-      console.log("Moneybox service çalıştı.");
-      var url = box.id!==undefined ? `moneyBoxCreate/${box.id}` :"moneyBoxCreate/{id}";
-      return this.patch<MoneyBox>(url, box);
+      return this.patch<MoneyBox>("moneyBoxCreate", box);
     } catch (error) {
-      return { 
-        name:"",
-        amount:0,
-        description:"",
-        is_deleted:false,
-        zone:"",
-        city:"",
-        user_id:""
+      return {
+        id:0,
+        name: "",
+        amount: 0,
+        description: "",
+        is_deleted: false,
+        zone: "",
+        city: "",
+        user_id: ""
       };
     }
   }
 
-  async deleteById(id: string): Promise<void> {
+  async update(box: MoneyBox): Promise<MoneyBox> {
+    debugger;
+    try {
+      return this.patch<MoneyBox>(`moneyBoxCreate?id=${box.id}`, box);
+    } catch (error) {
+      return {
+        id:0,
+        name: "",
+        amount: 0,
+        description: "",
+        is_deleted: false,
+        zone: "",
+        city: "",
+        user_id: ""
+      };
+    }
+  }
+
+  async deleteById(id: number): Promise<void> {
     return this.delete(`moneyBoxDelete/${id}`);
   }
 }

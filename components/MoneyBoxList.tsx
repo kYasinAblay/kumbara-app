@@ -18,9 +18,9 @@ import IsAdmin from '@/hooks/useAuthorization';
 
 interface MoneyBoxListProps {
   moneyBoxes: MoneyBox[];
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
   onEdit: (box: MoneyBox) => void;
-  onUpdateAmount: (id: string, newAmount: number) => void;
+  onUpdateAmount: (id: number, newAmount: number) => void;
 }
 
 export function MoneyBoxList({
@@ -139,7 +139,7 @@ export function MoneyBoxList({
         // 📋 Flat list when filtered
         <FlatList
           data={filteredAndSortedBoxes}
-          keyExtractor={item => item.id!}
+          keyExtractor={item => item.id?.toString()!}
           renderItem={({ item }) => (
             <MoneyBoxCard
               box={item}

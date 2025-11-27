@@ -10,6 +10,7 @@ import AuthRepository from "@/src/repositories/AuthRepository";
 import LoginService from "@/src/api/LoginService";
 import UserService from "@/src/api/UserService";
 import useUser from "@/hooks/useUser";
+import SessionCookieStore from "@/src/session/SessionCookieStore";
 
 interface AuthContextType {
   userId: string | null | undefined;
@@ -31,6 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [role, setRole] = useState<string | null>(null);
 
   const {user} = useUser();
+  const cookie = SessionCookieStore.get();
 
   const showLoading = useCallback(() => setLittleLoad(true), []);
   const hideLoading = useCallback(() => setLittleLoad(false), []);
@@ -39,15 +41,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkSession = async () => {
     try {
       debugger;
-      
-      console.log("checksession > response",user);
-
-      if (user !==null) {
-        setUserId(user.id);
+      console.log("checksession > response",cookie);
+      if (cookie !==undefined) {
+         setUserId(user.id);
         setRole(user.role);
-      } else {
-        setUserId(null);
-        setRole(null);
       }
     } catch (err) {
       console.warn("Session check error:", err);

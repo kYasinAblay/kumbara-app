@@ -73,7 +73,7 @@ export default function LoginPage({ onLogin }) {
               <Ionicons
                 name="mail-outline"
                 size={20}
-                color="#9ca3af"
+                color={"black"}
                 style={styles.inputIcon}
               />
               <TextInput
@@ -92,7 +92,7 @@ export default function LoginPage({ onLogin }) {
               <Ionicons
                 name="lock-closed-outline"
                 size={20}
-                color="#9ca3af"
+                color="black"
                 style={styles.inputIcon}
               />
               <TextInput
@@ -204,6 +204,7 @@ const styles = StyleSheet.create({
     left: 10,
     top: "50%",
     marginTop: -10,
+    zIndex:1
   },
   input: {
     borderWidth: 1,

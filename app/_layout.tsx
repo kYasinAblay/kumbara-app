@@ -9,6 +9,8 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider,useAuth } from '@/context/AuthContext';
 import { LoadingProvider } from '@/context/LoadingContext';
 import LoadingOverlay from '@/components/LoadingOverlay';
+import useUser from '@/hooks/useUser';
+import SessionCookieStore from '@/src/session/SessionCookieStore';
 
 
 export const unstable_settings = {
@@ -17,21 +19,28 @@ export const unstable_settings = {
 
 function AuthGuard() {
 
-  const { userId, loading } = useAuth();
+  const { userId, loading,checkSession } = useAuth();
+  const cookie = SessionCookieStore.get();
+
+  
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
+    checkSession().then(()=>{
+       console.log("use efeck _layout cookie:",cookie);
     // checkSession bitmiş ve userId yoksa login'e gönder
-    if (!loading && userId === undefined) {
+    if (cookie === undefined) {
       router.replace("/login");
     }
-  }, [loading, userId]);
+    });
+   
+  }, [cookie]);
 
   useEffect(() => {
     // userId varsa login kabul et
     setIsReady(true);
-  }, [userId]);
+  }, [cookie]);
 
   if (loading || !isReady) {
     return (

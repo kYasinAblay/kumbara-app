@@ -26,15 +26,13 @@ export default  function UserSelect({ userId, handleChange }: Props) {
   const [userList, setUserList] = useState<User[]>();
   
   const getUsers = async () => {
-    debugger;
   const response = await UserRepository.fetchAll();
-  console.log("getusers",response.users!);
   return response.users!;
 };
 
-const findUser = async (userId:string)=>{
+const findUser = (userId:string)=>{
   var user = userList?.find((c) => c.id === userId);
-  if(!user) return "";
+  if(!user) return "Kullanıcı Seçiniz";
 
   return `${user.name} ${user.surname}`;
 }
@@ -58,9 +56,7 @@ const findUser = async (userId:string)=>{
           onPress={() => setUserModal(true)}
           style={styles.input}>
           <Text style={{ color: userId? "#000" : "#888" }}>
-            {userId
-              ? findUser(userId)
-              : "Kullanıcı seçiniz"}
+            {findUser(userId)}
           </Text>
         </TouchableOpacity>
     

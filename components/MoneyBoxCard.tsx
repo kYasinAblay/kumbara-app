@@ -14,9 +14,9 @@ import DateUtils from "@/src/utils/DateUtils";
 
 interface Props {
   box: MoneyBox;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
   onEdit: (box: MoneyBox) => void;
-  onUpdateAmount: (id: string, newAmount: number) => void;
+  onUpdateAmount: (id: number, newAmount: number) => void;
 }
 
 export const MoneyBoxCard: React.FC<Props> = ({

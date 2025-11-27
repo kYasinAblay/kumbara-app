@@ -6,12 +6,13 @@ import UserSelect from './UserSelect';
 
 interface MoneyBoxFormProps {
   initialData?: MoneyBox;
-  onSubmit: (data: Omit<MoneyBox, 'id' | 'is_deleted' | 'date'>) => void;
+  onSubmit: (data: Omit<MoneyBox, 'is_deleted' | 'created_at'>) => void;
   onCancel: () => void;
 }
 
  function MoneyBoxFormFunc({ initialData, onSubmit, onCancel }: MoneyBoxFormProps) {
   const [formData, setFormData] = useState({
+    id:initialData?.id||0,
     city: initialData?.city || '',
     zone: initialData?.zone || '',
     name: initialData?.name || '',
@@ -20,7 +21,7 @@ interface MoneyBoxFormProps {
     userId:initialData?.user_id || ''
   });
 
-  console.log(initialData);
+  
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -28,6 +29,7 @@ interface MoneyBoxFormProps {
   const handleSubmit = () => {
     if (!formData.name  || !formData.zone) return;
     onSubmit({
+      id: formData.id,
       city: formData.city,
       zone: formData.zone,
       name: formData.name,

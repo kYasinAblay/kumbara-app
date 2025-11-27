@@ -11,7 +11,12 @@ class MoneyBoxRepository {
     return await MoneyBoxService.create(box);
   }
 
-  async remove(id: string): Promise<void> {
+  async update(box: MoneyBox): Promise<MoneyBox> {
+    debugger;
+    return await MoneyBoxService.update(box);
+  }
+
+  async remove(id: number): Promise<void> {
     return await MoneyBoxService.deleteById(id);
   }
 }
