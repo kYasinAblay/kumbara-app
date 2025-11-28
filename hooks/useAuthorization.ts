@@ -1,8 +1,6 @@
-import { useAuth } from "@/context/AuthContext"
 
-export default function IsAdmin(){
-    const {role} = useAuth();
-    return {
+export default function IsAdmin(role:string){
+       return {
         IsAdmin :role?.toLowerCase() === "admin"
     };
 }

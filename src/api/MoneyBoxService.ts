@@ -4,7 +4,7 @@ import { MoneyBox } from "../models/MoneyBox";
 class MoneyBoxService extends BaseApiService {
   async getList(params?: string[]): Promise<MoneyBox[]> {
 
-    var request = await this.get<MoneyBox[]>("moneyboxlist");
+    var request = await this.get<MoneyBox[]>("moneyboxlist?isDeleted=false");
     return request;
   }
 

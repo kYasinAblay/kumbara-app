@@ -22,15 +22,17 @@ import UserRepository from '@/src/repositories/UserRepository';
 import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
 import formatDate from '@/src/utils/DateUtils';
 import DateUtils from '@/src/utils/DateUtils';
+import { MoneyBox } from '@/src/models/MoneyBox';
 
 
 interface ProfilePageProps {
+  moneyBoxes: MoneyBox[];
   user: User;
-  onUpdateUser: (data: Omit<User,"created_at"| "is_deleted" | "moneyboxes" | "role">) => void;
+  onUpdateUser: (data: Omit<User,"created_at"| "is_deleted" | "role" | "moneyboxes">) => void;
   onLogout?: () => void;
 }
 
-export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePageProps) {
+export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }: ProfilePageProps) {
    const insets = useSafeAreaInsets();
   
   const [isEditing, setIsEditing] = useState(false);
@@ -102,7 +104,7 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
     return `${user.name[0]}${user.surname[0]}`.toUpperCase();
   };
 
-  const activeMoneyboxes = user.moneyboxes?.filter((box) => !box.is_deleted);
+  const activeMoneyboxes = moneyBoxes?.filter((box) => !box.is_deleted);
   const totalSavings = activeMoneyboxes.reduce((sum, box) => sum + box.amount, 0);
 
   useEffect(() => {
@@ -324,7 +326,7 @@ export default function ProfilePage({ user, onUpdateUser, onLogout }: ProfilePag
     <View style={styles.statRow}>
       <Text style={styles.statLabel}>Toplam Kumbara</Text>
       <View style={[styles.badge, { backgroundColor: "#6b7280" }]}>
-        <Text style={styles.badgeText}>{user.moneyboxes.length}</Text>
+        <Text style={styles.badgeText}>{moneyBoxes.length}</Text>
       </View>
     </View>
 

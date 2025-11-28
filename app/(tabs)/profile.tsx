@@ -7,25 +7,32 @@ import Sleep from "@/src/utils/Sleep";
 import useUser from "@/hooks/useUser";
 import { ActivityIndicator } from "react-native";
 import { useLoading } from "@/context/LoadingContext";
+import { useUserStore } from "@/src/store/useUserStore";
+import { useMoneyBoxStore } from "@/src/store/moneyBoxStore";
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { user, loading, updateUser } = useUser();
-  
+  const { loading } = useUser();
+
+  const { user, updateUser } = useUserStore();
+  const { moneyBoxes } = useMoneyBoxStore();
 
   const handleLogout = async () => {
-    AuthRepository.logout(); 
+    AuthRepository.logout();
     router.push("/login");
   };
 
-  if (loading) return(
-  <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-    <ActivityIndicator size="large" />
-  </View>);
+  if (loading)
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
 
   return (
     <ProfilePage
-      user={user} 
+      user={user!}
+      moneyBoxes={moneyBoxes}
       onUpdateUser={updateUser}
       onLogout={handleLogout}
     />

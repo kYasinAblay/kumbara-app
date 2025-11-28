@@ -2,45 +2,45 @@ import { useEffect, useState } from "react";
 import UserService from "../src/api/UserService";
 import { User } from "../src/models/User";
 import Sleep from "@/src/utils/Sleep";
+import { useUserStore } from "@/src/store/useUserStore";
+import { useMoneyBoxStore } from "@/src/store/moneyBoxStore";
 
 export default function useUser() {
-    const [user, setUser] = useState<User>({
-        id: "",
-        username: "",
-        name: "",
-        surname: "",
-        phone: "",
-        zone: "",
-        city: 0,
-        district: "",
-        address: "",
-        picture: "",
-        moneyboxes: [],
-        role: "",
-        is_deleted: false,
-        created_at: ""
-    });
+    const { user, setUser, updateUser: updateUserStore } = useUserStore.getState();
+    const { setMoneyBoxes } = useMoneyBoxStore.getState();
 
     const [loading, setLoading] = useState(true);
 
     const fetchUser = async () => {
         try {
-            const data = await UserService.getMe();
-            await setUser(data.user);
+            await UserService.getMe().then((data) => {
+                setMoneyBoxes(data.user.moneyboxes);
+
+                data.user.moneyboxes = [];
+                setUser(data.user);
+            });
         } catch (error) {
             console.log("User fetch error:", error);
         } finally {
-          Sleep(1000).then(()=>setLoading(false));
+            Sleep(1000).then(() => setLoading(false));
         }
     };
 
-    const updateUser = (data: Omit<User, "created_at" | "is_deleted" | "moneyboxes" | "role">) => {
-        setUser((prev) => ({ ...prev, ...data }));
+    const updateUser = (data: Omit<User, "created_at" | "is_deleted" | "role" |"moneyboxes">) => {
+        updateUserStore(data);
     };
+
+    
+  const IsAdmin =(role:string) =>{
+       return {
+        IsAdmin :role?.toLowerCase() === "admin"
+    };
+    }
+
 
     useEffect(() => {
         fetchUser();
     }, []);
 
-    return { user, loading, updateUser };
+    return { user, loading,IsAdmin ,updateUser };
 }

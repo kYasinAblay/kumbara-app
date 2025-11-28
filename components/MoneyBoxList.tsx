@@ -13,7 +13,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { MoneyBox } from '../src/models/MoneyBox';
 import { MoneyBoxCard } from '../components/MoneyBoxCard';
-import { useAuth } from '@/context/AuthContext';
 import IsAdmin from '@/hooks/useAuthorization';
 
 interface MoneyBoxListProps {

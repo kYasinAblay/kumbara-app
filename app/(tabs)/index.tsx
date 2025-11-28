@@ -27,27 +27,38 @@ import { MoneyBoxList } from '../../components/MoneyBoxList';
 import MoneyBoxRepository from '@/src/repositories/MoneyBoxRepository';
 import useUser from '@/hooks/useUser';
 import { getCityNameById } from '@/hooks/getCityNameById';
-
+import { useMoneyBoxStore } from '@/src/store/moneyBoxStore';
 
 export default function HomeScreen() {
-  const [moneyBoxes, setMoneyBoxes] = useState<MoneyBox[]>([]);
+  const { moneyBoxes, setMoneyBoxes,updateMoneyBox,removeMoneyBox, updateAmount} = useMoneyBoxStore.getState();
+// const moneyBoxes = useMoneyBoxStore((state) => state.moneyBoxes);
+  //const [moneyBoxes, setMoneyBoxes] = useState<MoneyBox[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBox, setEditingBox] = useState<MoneyBox | null>(null);
 
-  const {user,loading,updateUser} = useUser();
+  const {user,loading} = useUser();
   // 📦 Load data
   useEffect(() => {
     const loadData = async () => {
       //  const saved = await AsyncStorage.getItem('moneyboxes');
-      //  if (saved) setMoneyBoxes(JSON.parse(saved));
-      console.log("load data in index.tsx",user.moneyboxes);
-      setMoneyBoxes(user.moneyboxes.filter(box => !box.is_deleted));
+         console.log("load data in index.tsx",moneyBoxes);
+      setMoneyBoxes(moneyBoxes.filter(box => !box.is_deleted));
+      //setMoneyBoxes(user.moneyboxes.filter(box => !box.is_deleted));
     };
     loadData();    
 
-  }, [user.moneyboxes]);
+  }, [moneyBoxes]);
 
-  
+  const reInitial = ()=>{
+        setEditingBox(prev => ({...prev,
+      id:0,
+      name:"",
+      amount:0,
+      description:"",
+      zone:"",
+      is_deleted:false
+    }));
+  }
   // 💾 Save data
   useEffect(() => {
     AsyncStorage.setItem('moneyboxes', JSON.stringify(moneyBoxes));
@@ -81,34 +92,41 @@ export default function HomeScreen() {
      .catch((err)=> {console.warn("Kayıt yapılamadı!"); return;});
 
      newBox.id = response.moneyboxes?.id;
-    setMoneyBoxes(prev => [...prev, newBox]);
+     updateMoneyBox(newBox.id!,newBox);
+    
+     //setMoneyBoxes(prev => [...prev, newBox]);
+    reInitial();
     setIsDialogOpen(false);
   },[editingBox]);
 
   const handleUpdateBox = useCallback((boxData: Omit<MoneyBox, 'is_deleted' | 'created_at'>) => {
     if (editingBox) {
-      setMoneyBoxes(prev =>
-        prev.map(box =>
-          box.id === editingBox.id ? { ...box, ...boxData } : box
-        )
-      );
-     console.log("update edilen data",boxData);
-     MoneyBoxRepository.update(boxData);
+      updateMoneyBox(boxData.id!,boxData);
+      // setMoneyBoxes(prev =>
+      //   prev.map(box =>
+      //     box.id === editingBox.id ? { ...box, ...boxData } : box
+      //   )
+      // );
+     
+      MoneyBoxRepository.update(boxData);
+      reInitial();
       setIsDialogOpen(false);
     }
   }, [editingBox]);
 
   const handleDeleteBox = async (id: number) => {
-    setMoneyBoxes(prev =>
-      prev.map(box => (box.id === id ? { ...box, is_deleted: true } : box)).filter(box => box.id !== id)
-    );
+    removeMoneyBox(id);
+    // setMoneyBoxes(prev =>
+    //   prev.map(box => (box.id === id ? { ...box, is_deleted: true } : box)).filter(box => box.id !== id)
+    // );
    await MoneyBoxRepository.remove(id);
   };
 
   const handleUpdateAmount = (id: number, newAmount: number) => {
-    setMoneyBoxes(prev =>
-      prev.map(box => (box.id === id ? { ...box, amount: newAmount } : box))
-    );
+    updateAmount(id,newAmount);
+    // setMoneyBoxes(prev =>
+    //   prev.map(box => (box.id === id ? { ...box, amount: newAmount } : box))
+    // );
   };
 
   const handleEdit = (box: MoneyBox) => {
@@ -118,14 +136,7 @@ export default function HomeScreen() {
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
-    setEditingBox(prev => ({...prev,
-      id:0,
-      name:"",
-      amount:0,
-      description:"",
-      zone:"",
-      is_deleted:false
-    }));
+    reInitial();
   };
 
 

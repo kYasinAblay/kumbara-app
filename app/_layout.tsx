@@ -83,11 +83,11 @@ export default function RootLayout() {
         value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
       >
         <AuthGuard />
-          <StatusBar
+          {/* <StatusBar
           style="dark" 
           translucent={true}
           backgroundColor="#742020ff"
-        />
+        /> */}
       </ThemeProvider>
     </AuthProvider>
   );

@@ -10,12 +10,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginPage from '@/components/LoginPage';
 import { useRouter } from 'expo-router';
 import { LoginRequest } from '@/src/models/LoginRequest';
-import { useAuth } from '@/context/AuthContext';
 import Sleep from '@/src/utils/Sleep';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const {loading} = useAuth();
 
   const handleLogin = (login:LoginRequest) => {
     //boş kontrol yapılacak

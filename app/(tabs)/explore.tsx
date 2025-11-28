@@ -5,7 +5,6 @@ import { Ionicons } from '@expo/vector-icons'; // PiggyBank, Plus yerine
 import { MoneyBoxForm } from '../../components/MoneyBoxForm';
 import { Dashboard } from '../../components/explore/Dashboard';
 import { MoneyBox } from '../../src/models/MoneyBox';
-import { useAuth } from '@/context/AuthContext';
 import { Redirect, useRouter } from 'expo-router';
 import IsAdmin from '@/hooks/useAuthorization';
 import { AlertDialog } from '@/components/ui/AlertDialog';
