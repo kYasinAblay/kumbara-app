@@ -30,9 +30,27 @@ class MoneyBoxService extends BaseApiService {
   }
 
   async update(box: MoneyBox): Promise<MoneyBox> {
-    debugger;
+  
     try {
       return this.patch<MoneyBox>(`moneyBoxCreate?id=${box.id}`, box);
+    } catch (error) {
+      return {
+        id:0,
+        name: "",
+        amount: 0,
+        description: "",
+        is_deleted: false,
+        zone: "",
+        city: "",
+        user_id: ""
+      };
+    }
+  }
+
+  async updateAmount(id:number,newAmount:number): Promise<MoneyBox> {
+  
+    try {
+      return this.post<MoneyBox>(`MoneyBoxAmount/${id}`, {amount:newAmount});
     } catch (error) {
       return {
         id:0,

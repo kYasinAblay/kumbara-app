@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { MoneyBox } from '../src/models/MoneyBox';
 import { MoneyBoxCard } from '../components/MoneyBoxCard';
-import IsAdmin from '@/hooks/useAuthorization';
+import useAuthorization from '@/hooks/useAuthorization';
 
 interface MoneyBoxListProps {
   moneyBoxes: MoneyBox[];
@@ -60,17 +60,16 @@ export function MoneyBoxList({
   const grouped = useMemo(() => {
     const res: Record<string, MoneyBox[]> = {};
     cities.forEach(c => (res[c] = filteredAndSortedBoxes.filter(b => b.city?.toUpperCase() === c?.toUpperCase())));
-    console.log(cities);
     return res;
   }, [filteredAndSortedBoxes, cities]);
 
   const hasFilters =
     searchTerm !== '' || selectedCity !== 'all' || sortBy !== 'date';
-
+   const {isAdmin} = useAuthorization();
   return (
     <View style={styles.container}>
       {/* 🔍 Search bar */}
-     { IsAdmin() &&
+     { isAdmin &&
       <View style={styles.searchBar}>
         <Ionicons name="search" size={18} color="#9ca3af" style={styles.iconLeft} />
         <TextInput

@@ -1,8 +1,8 @@
 import React, { useState,memo } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { MoneyBox } from '../src/models/MoneyBox';
-import IsAdmin from '@/hooks/useAuthorization';
 import UserSelect from './UserSelect';
+import useAuthorization from '@/hooks/useAuthorization';
 
 interface MoneyBoxFormProps {
   initialData?: MoneyBox;
@@ -38,7 +38,8 @@ interface MoneyBoxFormProps {
       user_id:formData.userId
     });
   };
-
+  const {isAdmin} = useAuthorization();
+  
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Name */}
@@ -51,7 +52,7 @@ interface MoneyBoxFormProps {
           onChangeText={(text) => handleChange('name', text)}
         />
       </View>
-      {IsAdmin() &&  <View style={[styles.field,{width:"100%"}]}>
+      {isAdmin &&  <View style={[styles.field,{width:"100%"}]}>
         <Text style={styles.label}>Kullanıcı *</Text>
         <UserSelect
           userId={formData.userId}
@@ -61,8 +62,8 @@ interface MoneyBoxFormProps {
       }
    
       {/* City and Zone */}
-      <View style={styles.row} >
-        <View style={[styles.field, styles.flex1]} >
+      <View style={styles.row}>
+        <View style={[styles.field, styles.flex1]}>
           <Text style={styles.label}>Şehir</Text>
        <Text
             style={[styles.input,{backgroundColor:"#DADADA"}]}

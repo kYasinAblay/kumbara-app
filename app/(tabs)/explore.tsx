@@ -6,8 +6,8 @@ import { MoneyBoxForm } from '../../components/MoneyBoxForm';
 import { Dashboard } from '../../components/explore/Dashboard';
 import { MoneyBox } from '../../src/models/MoneyBox';
 import { Redirect, useRouter } from 'expo-router';
-import IsAdmin from '@/hooks/useAuthorization';
 import { AlertDialog } from '@/components/ui/AlertDialog';
+import useAuthorization from '@/hooks/useAuthorization';
 
 export default function ExploreScreen() {
     
@@ -33,7 +33,7 @@ export default function ExploreScreen() {
   const handleCreateBox = (boxData: Omit<MoneyBox, 'id' | 'is_deleted' | 'date'>) => {
     const newBox: MoneyBox = {
       ...boxData,
-      id: Date.now().toString(),
+      //id: Date.now().toString(),
       is_deleted: false,
       created_at: new Date().toISOString(),
     };
@@ -53,7 +53,7 @@ export default function ExploreScreen() {
     }
   };
 
-  const handleDeleteBox = (id: string) => {
+  const handleDeleteBox = (id: number) => {
     Alert.alert('Sil', 'Bu kutuyu silmek istediğine emin misin?', [
       { text: 'İptal', style: 'cancel' },
       {
@@ -74,8 +74,9 @@ export default function ExploreScreen() {
   };
 
   const activeBoxes = moneyBoxes.filter(box => !box.is_deleted);
-
-  if (!IsAdmin()) {
+  
+  const {isAdmin} = useAuthorization();
+  if (!isAdmin) {
    
     return <View><AlertDialog
             visible={true}

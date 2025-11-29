@@ -34,6 +34,7 @@ export const MoneyBoxCard: React.FC<Props> = ({
     if (!val || val <= 0) return;
     const newAmount =
       type === "add" ? box.amount + val : Math.max(0, box.amount - val);
+       console.log("update item id",box.id!,newAmount);
     onUpdateAmount(box.id!, newAmount);
     setIsTransaction(false);
     setAmountText("");
@@ -152,10 +153,7 @@ export const MoneyBoxCard: React.FC<Props> = ({
         description={`"${box.name}" kumbarasını silmek istiyor musunuz? Bu işlem geri alınamaz.`}
         confirmText="Sil"
         cancelText="İptal"
-        onConfirm={() => {
-          alert(box.id);
-          onDelete(box.id!);
-        }}
+        onConfirm={() => onDelete(box.id!)}
       />
     </>
   );

@@ -84,6 +84,7 @@ export default function LoginPage({ onLogin }) {
                 }
                 style={styles.input}
                 autoCapitalize="none"
+                keyboardType="email-address"
               />
             </View>
 
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#eef2ff",
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: 30
   },
   logoContainer: {
     alignItems: "center",
@@ -211,9 +212,10 @@ const styles = StyleSheet.create({
     borderColor: "#c7d2fe",
     borderRadius: 10,
     padding: 10,
-    paddingLeft: 36,
+    //paddingLeft: 36,
     fontSize: 14,
     backgroundColor: "#fff",
+    textAlign: 'center'
   },
   loginButton: {
     backgroundColor: "#016840",

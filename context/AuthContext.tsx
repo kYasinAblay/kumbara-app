@@ -1,70 +1,83 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
-import { router, useRouter } from "expo-router";
+// src/context/AuthContext.tsx
+import React, { createContext, useContext, useCallback, useState } from "react";
+import { router } from "expo-router";
 import AuthRepository from "@/src/repositories/AuthRepository";
-import LoginService from "@/src/api/LoginService";
-import UserService from "@/src/api/UserService";
-import useUser from "@/hooks/useUser";
 import SessionCookieStore from "@/src/session/SessionCookieStore";
+import { useUserStore } from "@/src/store/useUserStore";
+import DateUtils from "@/src/utils/DateUtils";
 
 interface AuthContextType {
-  userId: string | null | undefined;
-  role: string | null | undefined;
+  userId: string | null;
+  role: string | null;
   loading: boolean;
-  littleLoad: boolean;
-  showLoading: () => void;
-  hideLoading: () => void;
-  checkSession: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [userId, setUserId] = useState<string | null>(null); // user object or null
-  const [loading, setLoading] = useState(true);
-  const [littleLoad, setLittleLoad] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const {user} = useUser();
-  const cookie = SessionCookieStore.get();
+  const { setUser, clearUser } = useUserStore();
 
-  const showLoading = useCallback(() => setLittleLoad(true), []);
-  const hideLoading = useCallback(() => setLittleLoad(false), []);
 
-  // 🔎 Session kontrolü
-  const checkSession = async () => {
+
+  // // 🌟 TEK GERÇEK CHECKSESSION
+  // const checkSession = useCallback(async () => {
+  //   debugger;
+  //   setLoading(true);
+  // console.log("AUTHCONTEXT çalışıyor",DateUtils.formatDateTime(new Date().toISOString()));
+
+  //   try {
+  //     const cookie = SessionCookieStore.get();
+  //     const check = await AuthRepository.check();
+
+  //     if (!cookie|| !check?.success) {
+  //       clearUser();
+  //       setUserId(null);
+  //       setRole(null);
+  //       return false;
+  //     }
+
+  //     // 2) User bilgisini çek
+  //     const me = await AuthRepository.me(); // <-- user objesi gelecek
+  //     if (!me?.success || !me?.user) {
+  //       clearUser();
+  //       setUserId(null);
+  //       setRole(null);
+  //       return false;
+  //     }
+
+  //     // User bilgilerini zustand store’a koy
+  //     setUser(me.user);
+  //     setUserId(me.user.id); 
+  //     setRole(me.user.role);
+
+  //     return true;
+
+  //   } catch (err) {
+  //     console.warn("checkSession error:", err);
+  //     clearUser();
+  //     setUserId(null);
+  //     setRole(null);
+  //     return false;
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, []);
+
+  const logout = useCallback(async () => {
     try {
-      debugger;
-      console.log("checksession > response",cookie);
-      if (cookie !==undefined) {
-         setUserId(user.id);
-        setRole(user.role);
-      }
-    } catch (err) {
-      console.warn("Session check error:", err);
-      setUserId(null);
-      setRole(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-      checkSession(); // <-- BEKLET
-  }, []);
-
-  const logout = async () => {
-    await AuthRepository.logout();
-    setUserId("");
-    setRole("");
+      await AuthRepository.logout();
+    } catch {}
+    SessionCookieStore.clear();
+    clearUser();
+    setUserId(null);
+    setRole(null);
     router.replace("/login");
-  }; 
+  }, []);
 
   return (
     <AuthContext.Provider
@@ -72,10 +85,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         userId,
         role,
         loading,
-        littleLoad,
-        showLoading,
-        hideLoading,
-        checkSession,
         logout,
       }}
     >
@@ -85,13 +94,124 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("useAuth must be used inside AuthProvider!");
-  }
-
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be inside AuthProvider");
+  return ctx;
 };
 
-//export const useAuth = () => useContext(AuthContext);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, {
+//   createContext,
+//   useContext,
+//   useState,
+//   useCallback,
+// } from "react";
+// import { router } from "expo-router";
+// import AuthRepository from "@/src/repositories/AuthRepository";
+// import SessionCookieStore from "@/src/session/SessionCookieStore";
+
+// interface AuthContextType {
+//   userId: number | null;
+//   role: string | null;
+//   loading: boolean;
+//   littleLoad: boolean;
+//   showLoading: () => void;
+//   hideLoading: () => void;
+//   checkSession: () => Promise<boolean>;
+//   logout: () => Promise<void>;
+// }
+
+// const AuthContext = createContext<AuthContextType | null>(null);
+
+// export function AuthProvider({ children }: { children: React.ReactNode }) {
+//   const [userId, setUserId] = useState<number | null>(null);
+//   const [role, setRole] = useState<string | null>(null);
+//   const [loading, setLoading] = useState(true);
+//   const [littleLoad, setLittleLoad] = useState(false);
+
+//   const showLoading = useCallback(() => setLittleLoad(true), []);
+//   const hideLoading = useCallback(() => setLittleLoad(false), []);
+
+//   // 🟢 DOĞRU CHECKSESSION
+//   const checkSession = useCallback(async () => {
+//     try {
+//     debugger;
+//     console.log("auth context çalışıyor");
+//       const cookie = SessionCookieStore.get();
+
+//       if (!cookie) {
+//         setUserId(null);
+//         setRole(null);
+//         return false;
+//       }
+
+//       const response = await AuthRepository.check();
+
+//       if (response?.success) {
+//         setUserId(1);
+//         setRole("admin");
+//         return true;
+//       }
+// //return false;
+//     } catch (err) {
+//       console.warn("Session check error:", err);
+//       setUserId(null);
+//       setRole(null);
+//       return false;
+
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, []);
+
+//   const logout = useCallback(async () => {
+//     try {
+//       await AuthRepository.logout();
+//     } catch {}
+//     SessionCookieStore.clear?.();
+//     setUserId(null);
+//     setRole(null);
+//     router.replace("/login");
+//   }, []);
+
+//   return (
+//     <AuthContext.Provider
+//       value={{
+//         userId,
+//         role,
+//         loading,
+//         littleLoad,
+//         showLoading,
+//         hideLoading,
+//         checkSession,
+//         logout,
+//       }}
+//     >
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// }
+
+// export const useAuth = () => {
+//   const ctx = useContext(AuthContext);
+//   if (!ctx) throw new Error("useAuth must be used inside AuthProvider!");
+//   return ctx;
+// };

@@ -1,13 +1,17 @@
-import { create } from 'zustand';
-import {User} from "../models/User";
-import {MoneyBox} from "../models/MoneyBox";
+import { create } from "zustand";
+import { User } from "../models/User";
+import { MoneyBox } from "../models/MoneyBox";
+import EventBus from "@/src/utils/EventBus";
+
 
 interface MoneyBoxState {
   moneyBoxes: MoneyBox[];
   setMoneyBoxes: (list: MoneyBox[]) => void;
-  updateMoneyBox: (id: number, newData: Partial<MoneyBox>) => void;
-  removeMoneyBox: (id:number)=>void;
-  updateAmount:(id: number, newAmount: number)=>void;
+  addMoneyBox: (newData: Partial<MoneyBox>) => void;
+  confirmAdd: (tempId: number, realId: number) => void;
+  updateMoneyBox: (id: number, boxData: Partial<MoneyBox>) => void;
+  removeMoneyBox: (id: number) => void;
+  updateAmount: (id: number, newAmount: number) => void;
 }
 
 export const useMoneyBoxStore = create<MoneyBoxState>((set) => ({
@@ -15,32 +19,53 @@ export const useMoneyBoxStore = create<MoneyBoxState>((set) => ({
 
   setMoneyBoxes: (list) => set({ moneyBoxes: list }),
 
-  updateMoneyBox: (id, newData) =>
+  addMoneyBox: (newData) => {
+
+     const tempId = Date.now(); // geçici id
+     const tempBox = { ...newData, id: tempId };
+
     set((state) => ({
-      moneyBoxes: state.moneyBoxes.map((k) =>
-        k.id === id ? { ...k, ...newData } : k
+      moneyBoxes: [...state.moneyBoxes, tempBox as MoneyBox],
+    }));
+    EventBus.emit("MONEYBOX_ADDED", tempBox);
+  },
+
+    confirmAdd: (tempId, realId) =>
+    set((s) => ({
+      moneyBoxes: s.moneyBoxes.map((b) =>
+        b.id === tempId ? { ...b, id: realId } : b
       ),
     })),
 
-    removeMoneyBox: (id) =>
-    set((state) => ({
-      moneyBoxes: state.moneyBoxes.map((k) =>
-        k.id === id ? { ...k, is_deleted:true } : k
-      ),
-    })),
+    updateMoneyBox: (id, boxData) => {
+  set((state) => ({
+    moneyBoxes: state.moneyBoxes.map((k) =>
+      k.id === id ? { ...k, ...boxData } : k
+    ),
+  }));
+  EventBus.emit("MONEYBOX_UPDATED", { id, boxData });
+},
 
-    
-    updateAmount: (id, newAmount) =>
-    set((state) => ({
-      moneyBoxes: state.moneyBoxes.map((k) =>
-        k.id === id ? { ...k, amount:newAmount } : k
-      ),
-    })),
+removeMoneyBox: (id) => {
+  set((state) => ({
+    moneyBoxes: state.moneyBoxes
+      .map((k) => (k.id === id ? { ...k, is_deleted: true } : k))
+      .filter((box) => box.is_deleted !== true),
+  }));
 
-    //setMoneyBoxes(prev =>
-    //   prev.map(box => (box.id === id ? { ...box, is_deleted: true } : box)).filter(box => box.id !== id)
-    // );
+  EventBus.emit("MONEYBOX_REMOVED", id);
+},
+
+updateAmount: (id, newAmount) => {
+  set((state) => ({
+    moneyBoxes: state.moneyBoxes.map((k) =>
+      k.id === id ? { ...k, amount: newAmount } : k
+    ),
+  }));
+  EventBus.emit("MONEYBOX_AMOUNT_UPDATED", { id, newAmount });
+},
+
+  //setMoneyBoxes(prev =>
+  //   prev.map(box => (box.id === id ? { ...box, is_deleted: true } : box)).filter(box => box.id !== id)
+  // );
 }));
-
-
-

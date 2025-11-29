@@ -6,7 +6,6 @@ import AuthRepository from "@/src/repositories/AuthRepository";
 import Sleep from "@/src/utils/Sleep";
 import useUser from "@/hooks/useUser";
 import { ActivityIndicator } from "react-native";
-import { useLoading } from "@/context/LoadingContext";
 import { useUserStore } from "@/src/store/useUserStore";
 import { useMoneyBoxStore } from "@/src/store/moneyBoxStore";
 

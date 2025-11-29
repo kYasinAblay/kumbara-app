@@ -15,14 +15,13 @@ export default function useUser() {
         try {
             await UserService.getMe().then((data) => {
                 setMoneyBoxes(data.user.moneyboxes);
-
-                data.user.moneyboxes = [];
-                setUser(data.user);
+                const sanitized = { ...data.user, moneyboxes: [] };
+                setUser(sanitized);
             });
         } catch (error) {
             console.log("User fetch error:", error);
         } finally {
-            Sleep(1000).then(() => setLoading(false));
+            await Sleep(500).then(() => setLoading(false));
         }
     };
 
@@ -31,16 +30,10 @@ export default function useUser() {
     };
 
     
-  const IsAdmin =(role:string) =>{
-       return {
-        IsAdmin :role?.toLowerCase() === "admin"
-    };
-    }
-
 
     useEffect(() => {
         fetchUser();
     }, []);
 
-    return { user, loading,IsAdmin ,updateUser };
+    return { user, loading ,updateUser };
 }

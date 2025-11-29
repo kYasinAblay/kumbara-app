@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Modal,
-  StatusBar,
   ActivityIndicator
 } from 'react-native';
 import { Ionicons, MaterialIcons, Feather } from "@expo/vector-icons";
@@ -20,7 +19,6 @@ import { getCityNameById } from '@/hooks/getCityNameById';
 import { useLoading } from '@/context/LoadingContext';
 import UserRepository from '@/src/repositories/UserRepository';
 import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
-import formatDate from '@/src/utils/DateUtils';
 import DateUtils from '@/src/utils/DateUtils';
 import { MoneyBox } from '@/src/models/MoneyBox';
 
@@ -443,7 +441,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     borderRadius: 12,
-    padding: 16,
+    padding: 26,
     marginBottom: 16,
     shadowColor: '#000',
     shadowOpacity: 0.1,

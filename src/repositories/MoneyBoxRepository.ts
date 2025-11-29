@@ -7,13 +7,18 @@ class MoneyBoxRepository {
   }
 
   async add(box: MoneyBox): Promise<MoneyBox> {
-    debugger;
+  
     return await MoneyBoxService.create(box);
   }
 
   async update(box: MoneyBox): Promise<MoneyBox> {
-    debugger;
+ 
     return await MoneyBoxService.update(box);
+  }
+
+  async updateAmount(id:number,amount:number): Promise<MoneyBox> {
+ 
+    return await MoneyBoxService.updateAmount(id,amount);
   }
 
   async remove(id: number): Promise<void> {
