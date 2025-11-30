@@ -66,9 +66,9 @@ export default function HomeScreen() {
     }));
   };
   // 💾 Save data
-  useEffect(() => {
-    AsyncStorage.setItem("moneyboxes", JSON.stringify(moneyBoxes));
-  }, [moneyBoxes]);
+  // useEffect(() => {
+  //   AsyncStorage.setItem("moneyboxes", JSON.stringify(moneyBoxes));
+  // }, [moneyBoxes]);
 
   useEffect(() => {
     setEditingBox({

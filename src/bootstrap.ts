@@ -1,7 +1,6 @@
-// src/bootstrap.ts
 import { SyncService } from "./services/SyncService";
 import { NetworkService } from "./core/network/NetworkService";
-
+import { AppLifecycleService } from "./core/lifecycle/AppLifecycleService";
 /**
  * Global bootstrap initializer
  * Uygulama yaşam döngüsü boyunca sadece 1 kez çalışır.
@@ -23,6 +22,11 @@ export function bootstrap() {
   // Servisleri başlat
   NetworkService.start();
   SyncService.init();
+  AppLifecycleService.start();
 
   console.log("%cBootstrap complete.", "color: green; font-weight: bold");
+ 
 }
+
+bootstrap();
+  

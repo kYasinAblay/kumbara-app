@@ -8,70 +8,18 @@ import { MoneyBox } from '../../src/models/MoneyBox';
 import { Redirect, useRouter } from 'expo-router';
 import { AlertDialog } from '@/components/ui/AlertDialog';
 import useAuthorization from '@/hooks/useAuthorization';
+import { useMoneyBoxStore } from '@/src/store/moneyBoxStore';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ExploreScreen() {
     
-  const [moneyBoxes, setMoneyBoxes] = useState<MoneyBox[]>([]);
+  const {moneyBoxes, setMoneyBoxes} = useMoneyBoxStore();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBox, setEditingBox] = useState<MoneyBox | null>(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    (async () => {
-      const saved = await AsyncStorage.getItem('moneyboxes');
-      if (saved) {
-        setMoneyBoxes(JSON.parse(saved));
-      }
-    })();
-  }, []);
 
-  useEffect(() => {
-    AsyncStorage.setItem('moneyboxes', JSON.stringify(moneyBoxes));
-  }, [moneyBoxes]);
-
-  const handleCreateBox = (boxData: Omit<MoneyBox, 'id' | 'is_deleted' | 'date'>) => {
-    const newBox: MoneyBox = {
-      ...boxData,
-      //id: Date.now().toString(),
-      is_deleted: false,
-      created_at: new Date().toISOString(),
-    };
-    setMoneyBoxes(prev => [...prev, newBox]);
-    setIsDialogOpen(false);
-  };
-
-  const handleUpdateBox = (boxData: Omit<MoneyBox, 'id' | 'is_deleted' | 'date'>) => {
-    if (editingBox) {
-      setMoneyBoxes(prev =>
-        prev.map(box =>
-          box.id === editingBox.id ? { ...box, ...boxData } : box
-        )
-      );
-      setEditingBox(null);
-      setIsDialogOpen(false);
-    }
-  };
-
-  const handleDeleteBox = (id: number) => {
-    Alert.alert('Sil', 'Bu kutuyu silmek istediğine emin misin?', [
-      { text: 'İptal', style: 'cancel' },
-      {
-        text: 'Evet', style: 'destructive',
-        onPress: () =>
-          setMoneyBoxes(prev =>
-            prev.map(box =>
-              box.id === id ? { ...box, is_deleted: true } : box
-            )
-          ),
-      },
-    ]);
-  };
-
-  const handleEdit = (box: MoneyBox) => {
-    setEditingBox(box);
-    setIsDialogOpen(true);
-  };
 
   const activeBoxes = moneyBoxes.filter(box => !box.is_deleted);
   
@@ -87,14 +35,14 @@ export default function ExploreScreen() {
             onConfirm={()=>router.navigate("/(tabs)")}
           /></View>;
   }
-
+//dropdownbox ile yıllık kazanç grafiği ekleyebiliriz
   return (
-    <View style={styles.container}>
+     <SafeAreaView style={[styles.safeArea, styles.container]}>
       {/* Header */}
       <View style={styles.header}>
         {/* <Ionicons name="piggy-bank" size={36} color="#016840" /> */}
         <View>
-          <Text style={styles.title}>Money Box Manager</Text>
+          <Text style={styles.title}>Kumbara Analitiği</Text>
           <Text style={styles.subtitle}>Manage your savings across locations</Text>
         </View>
         {/* bu bölümü istatistik butonu yapabiliriz
@@ -110,28 +58,17 @@ export default function ExploreScreen() {
       <Dashboard moneyBoxes={activeBoxes} />
 
   
-
-      {/* Modal for Create/Edit */}
-      <Modal visible={isDialogOpen} animationType="slide" style={{height:50,maxHeight:50, margin: 0,flex:0.5 }}>
-           <View style={styles.modalContent}>
-          <MoneyBoxForm
-            initialData={editingBox || undefined}
-            onSubmit={editingBox ? handleUpdateBox : handleCreateBox}
-            onCancel={() => {
-              setEditingBox(null);
-              setIsDialogOpen(false);
-            }}
-          />
-        </View>     
-      </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: 
-  { flex: 1, backgroundColor: '#eef2ff', padding: 16 ,paddingTop:50},
-
+  { flex: 1, backgroundColor: '#eef2ff', padding: 16 },
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#eef2ff", // from-blue-50 via-indigo-50 to-purple-50
+  },
   header: 
   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
   title: 

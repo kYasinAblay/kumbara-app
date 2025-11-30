@@ -21,11 +21,12 @@ import UserRepository from '@/src/repositories/UserRepository';
 import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
 import DateUtils from '@/src/utils/DateUtils';
 import { MoneyBox } from '@/src/models/MoneyBox';
+import AuthRepository from '@/src/repositories/AuthRepository';
 
 
 interface ProfilePageProps {
   moneyBoxes: MoneyBox[];
-  user: User;
+  user: User | null;
   onUpdateUser: (data: Omit<User,"created_at"| "is_deleted" | "role" | "moneyboxes">) => void;
   onLogout?: () => void;
 }
@@ -35,17 +36,17 @@ export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }:
   
   const [isEditing, setIsEditing] = useState(false);
   const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
-
+  
   const [formData, setFormData] = useState({
-    id: user.id,
-    name: user.name,
-    surname: user.surname,
-    phone: user.phone,
-    city:user.city,
-    district:user.district,
-    picture:user.picture,
-    zone: user.zone,
-    address: user.address
+    id: user?.id,
+    name: user?.name,
+    surname: user?.surname,
+    phone: user?.phone,
+    city:user?.city,
+    district:user?.district,
+    picture:user?.picture,
+    zone: user?.zone,
+    address: user?.address
   });
 
   const { loading,showLoading,hideLoading } = useLoading();
@@ -99,7 +100,7 @@ export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }:
 
 
   const getInitials = () => {
-    return `${user.name[0]}${user.surname[0]}`.toUpperCase();
+    return `${user?.name[0]}${user?.surname[0]}`.toUpperCase();
   };
 
   const activeMoneyboxes = moneyBoxes?.filter((box) => !box.is_deleted);
@@ -109,15 +110,15 @@ export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }:
   if (!user) return;
 
   setFormData({
-    id:user.id,
-    name: user.name,
-    surname: user.surname,
-    phone: user.phone,
-    city: user.city,
-    district: user.district,
-    picture: user.picture,
-    zone: user.zone,
-    address: user.address
+    id:user?.id,
+    name: user?.name,
+    surname: user?.surname,
+    phone: user?.phone,
+    city: user?.city,
+    district: user?.district,
+    picture: user?.picture,
+    zone: user?.zone,
+    address: user?.address
   });
 }, [user]);
 
@@ -150,18 +151,18 @@ export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }:
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.nameText}>
-              {user.name} {user.surname}
+              {user?.name} {user?.surname}
             </Text>
             <Text style={styles.memberText}>
               <Ionicons name="calendar-outline" size={14} /> Üyelik:{' '}
-              {DateUtils.formatDate(user.created_at!.toString())}
+              {DateUtils.formatDate(user?.created_at!.toString())}
             </Text>
           </View>
 
           {!isEditing && (
             <TouchableOpacity
               style={styles.editButton}
-              onPress={() => setIsEditing(true)}
+              onPress={() => {setIsEditing(true); AuthRepository.logout();}}
             >
               <Ionicons name="create-outline" size={18} color="#fff" />
               <Text style={styles.editButtonText}>Düzenle</Text>
@@ -262,20 +263,20 @@ export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }:
             <View style={styles.infoItem}>
               <Ionicons name="person-outline" size={20} color="#4b0082" />
               <Text style={styles.infoText}>
-                {user.name} {user.surname}
+                {user?.name} {user?.surname}
               </Text>
             </View>
             <View style={styles.infoItem}>
               <Ionicons name="call-outline" size={20} color="#4b0082" />
-              <Text style={styles.infoText}>{user.phone}</Text>
+              <Text style={styles.infoText}>{user?.phone}</Text>
             </View>
             <View style={styles.infoItem}>
               <Ionicons name="map-outline" size={20} color="#4b0082" />
-              <Text style={styles.infoText}>{getCityNameById(user.city)}/{user.zone}</Text>
+              <Text style={styles.infoText}>{getCityNameById(user?.city)}/{user?.zone}</Text>
             </View>
             <View style={styles.infoItem}>
               <Ionicons name="home-outline" size={20} color="#4b0082" />
-              <Text style={styles.infoText}>{user.address}</Text>
+              <Text style={styles.infoText}>{user?.address}</Text>
             </View>
           </View>
         )}
@@ -349,16 +350,16 @@ export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }:
 
   <CardContent>
 
-    {/* USER ID */}
+    {/* user? ID */}
     <View style={{ marginBottom: 10}}>
       <Text style={styles.infoLabel}>Kullanıcı ID</Text>
-      <Text style={styles.infoValueID}>{user.id}</Text>
+      <Text style={styles.infoValueID}>{user?.id}</Text>
     </View>
 
     {/* DATE */}
     <View style={{ marginBottom: 10 }}>
       <Text style={styles.infoLabel}>Kayıt Tarihi</Text>
-      <Text style={styles.infoValue}>{DateUtils.formatDate(user.created_at!)}</Text>
+      <Text style={styles.infoValue}>{DateUtils.formatDate(user?.created_at!)}</Text>
     </View>
 
     {/* STATUS */}

@@ -23,51 +23,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { setUser, clearUser } = useUserStore();
 
 
-
-  // // 🌟 TEK GERÇEK CHECKSESSION
-  // const checkSession = useCallback(async () => {
-  //   debugger;
-  //   setLoading(true);
-  // console.log("AUTHCONTEXT çalışıyor",DateUtils.formatDateTime(new Date().toISOString()));
-
-  //   try {
-  //     const cookie = SessionCookieStore.get();
-  //     const check = await AuthRepository.check();
-
-  //     if (!cookie|| !check?.success) {
-  //       clearUser();
-  //       setUserId(null);
-  //       setRole(null);
-  //       return false;
-  //     }
-
-  //     // 2) User bilgisini çek
-  //     const me = await AuthRepository.me(); // <-- user objesi gelecek
-  //     if (!me?.success || !me?.user) {
-  //       clearUser();
-  //       setUserId(null);
-  //       setRole(null);
-  //       return false;
-  //     }
-
-  //     // User bilgilerini zustand store’a koy
-  //     setUser(me.user);
-  //     setUserId(me.user.id); 
-  //     setRole(me.user.role);
-
-  //     return true;
-
-  //   } catch (err) {
-  //     console.warn("checkSession error:", err);
-  //     clearUser();
-  //     setUserId(null);
-  //     setRole(null);
-  //     return false;
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }, []);
-
   const logout = useCallback(async () => {
     try {
       await AuthRepository.logout();

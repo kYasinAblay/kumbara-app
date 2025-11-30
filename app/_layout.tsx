@@ -13,7 +13,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { LoadingProvider } from "@/context/LoadingContext";
 import LoadingOverlay from "@/components/LoadingOverlay";
-import { bootstrap } from "@/src/bootstrap";
+import  "@/src/bootstrap";
 import { performSessionCheck } from "@/src/controllers/SessionController";
 import { SessionWatcher } from "@/src/session/SessionWatcher";
 
@@ -27,6 +27,7 @@ function AuthGuard() {
   const [ok, setOk] = useState(false);
 
   useEffect(() => {
+    debugger;
     let mounted = true;
 
     const run = async () => {
@@ -77,9 +78,10 @@ export default function RootLayout() {
     InterBold: require("../assets/fonts/static/Inter_24pt-SemiBold.ttf"),
   });
 
-  useEffect(() => {
-    bootstrap();
-  }, []);
+
+  // useEffect(() => {
+  //   bootstrap();
+  // }, []);
 
   if (!loaded)
     return (
@@ -91,7 +93,7 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-         <SessionWatcher />
+        <SessionWatcher />
         <AuthGuard />
         <StatusBar
           style="dark"
