@@ -65,10 +65,7 @@ export default function HomeScreen() {
       is_deleted: false,
     }));
   };
-  // 💾 Save data
-  // useEffect(() => {
-  //   AsyncStorage.setItem("moneyboxes", JSON.stringify(moneyBoxes));
-  // }, [moneyBoxes]);
+
 
   useEffect(() => {
     setEditingBox({
@@ -93,13 +90,9 @@ export default function HomeScreen() {
         user_id: user.id,
       };
 
-      // const response = await MoneyBoxRepository.add(boxData)
-      //  .catch((err)=> {console.warn("Kayıt yapılamadı!"); return;});
-
-      //  newBox.id = response.moneyboxes?.id;
       addMoneyBox(newBox);
 
-      //setMoneyBoxes(prev => [...prev, newBox]);
+ 
       reInitial();
       setIsDialogOpen(false);
     },
@@ -111,13 +104,6 @@ export default function HomeScreen() {
       if (editingBox) {
         updateMoneyBox(boxData.id!, boxData);
 
-        // setMoneyBoxes(prev =>
-        //   prev.map(box =>
-        //     box.id === editingBox.id ? { ...box, ...boxData } : box
-        //   )
-        // );
-
-        // MoneyBoxRepository.update(boxData);
         reInitial();
         setIsDialogOpen(false);
       }
@@ -127,10 +113,6 @@ export default function HomeScreen() {
 
   const handleDeleteBox = async (id: number) => {
     removeMoneyBox(id);
-    // setMoneyBoxes(prev =>
-    //   prev.map(box => (box.id === id ? { ...box, is_deleted: true } : box)).filter(box => box.id !== id)
-    // );
-    // await MoneyBoxRepository.remove(id);
   };
 
   const handleEdit = (box: MoneyBox) => {

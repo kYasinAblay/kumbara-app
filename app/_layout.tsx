@@ -27,7 +27,7 @@ function AuthGuard() {
   const [ok, setOk] = useState(false);
 
   useEffect(() => {
-    debugger;
+  
     let mounted = true;
 
     const run = async () => {

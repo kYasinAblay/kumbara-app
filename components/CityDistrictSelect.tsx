@@ -12,19 +12,14 @@ import districts from "../src/data/districts.json";
 
 interface Props {
   formData: {
-    name: string,
-    surname: string,
-    phone: string,
     city:number,
     district:string,
-    zone: string,
-    picture:string,
-    address: string,
   };
   handleChange: (field: string, value: string | number) => void;
+  titleVisible?: boolean;
 }
 
-export default function CityDistrictSelect({ formData, handleChange }: Props) {
+export default function CityDistrictSelect({ formData, handleChange,titleVisible=true }: Props) {
   const [cityModal, setCityModal] = useState(false);
   const [districtModal, setDistrictModal] = useState(false);
 
@@ -36,7 +31,7 @@ export default function CityDistrictSelect({ formData, handleChange }: Props) {
     <View style={styles.cityZoneInput}>
           {/* Şehir */}
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>Şehir</Text>
+        {titleVisible&&<Text style={styles.label}>Şehir</Text>}
         <TouchableOpacity
           onPress={() => setCityModal(true)}
           style={styles.rowInput}>
@@ -50,7 +45,7 @@ export default function CityDistrictSelect({ formData, handleChange }: Props) {
 
       {/* İlçe */}
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>İlçe</Text>
+       {titleVisible && <Text style={styles.label}>İlçe</Text>}
 
         <TouchableOpacity
           disabled={!formData.city}
@@ -135,7 +130,8 @@ export default function CityDistrictSelect({ formData, handleChange }: Props) {
 
 const styles = StyleSheet.create({
    inputGroup: {
-    marginBottom: 15,
+    marginBottom: 5,
+    width:"49%"
   },
 
  label: { fontSize: 14, color: '#4b5563', marginBottom: 4 },
@@ -145,7 +141,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 14,
-    width:175,
+    width:"100%",
     maxWidth:"100%"
   },
   cityZoneInput: {

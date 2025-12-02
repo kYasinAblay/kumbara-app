@@ -162,7 +162,7 @@ export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }:
           {!isEditing && (
             <TouchableOpacity
               style={styles.editButton}
-              onPress={() => {setIsEditing(true); AuthRepository.logout();}}
+              onPress={() => setIsEditing(true)}
             >
               <Ionicons name="create-outline" size={18} color="#fff" />
               <Text style={styles.editButtonText}>Düzenle</Text>
@@ -204,26 +204,7 @@ export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }:
 
             <CityDistrictSelect formData={formData} handleChange={handleChange} />
    
-            {/* <View style={styles.cityZoneInput}>
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Bölge</Text>
-                <TextInput
-                  value={formData.zone}
-                  onChangeText={(v) => handleChange('zone', v)}
-                  style={styles.rowInput}
-                />
-              </View>
-                <View style={styles.inputGroup}>
-                <Text style={styles.label}>Şehir</Text>
-                <TextInput
-                  value={formData.city}
-                  onChangeText={(v) => handleChange('city', v)}
-                  style={styles.rowInput}
-                />
-              </View>
-            </View> */}
-
-              <View style={styles.inputGroup}>
+             <View style={styles.inputGroup}>
               <Text style={styles.label}>Bölge</Text>
               <TextInput
                 value={formData.zone}

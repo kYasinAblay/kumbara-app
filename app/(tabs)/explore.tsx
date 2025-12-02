@@ -19,8 +19,6 @@ export default function ExploreScreen() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const router = useRouter();
 
-
-
   const activeBoxes = moneyBoxes.filter(box => !box.is_deleted);
   
   const {isAdmin} = useAuthorization();

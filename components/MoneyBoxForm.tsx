@@ -1,4 +1,4 @@
-import React, { useState,memo } from 'react';
+import React, { useState,memo, useCallback } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { MoneyBox } from '../src/models/MoneyBox';
 import UserSelect from './UserSelect';
@@ -22,9 +22,9 @@ interface MoneyBoxFormProps {
   });
 
   
-  const handleChange = (field: string, value: string) => {
+  const handleChange = useCallback((field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  },[]);
 
   const handleSubmit = () => {
     if (!formData.name  || !formData.zone) return;
@@ -55,6 +55,7 @@ interface MoneyBoxFormProps {
       {isAdmin &&  <View style={[styles.field,{width:"100%"}]}>
         <Text style={styles.label}>Kullanıcı *</Text>
         <UserSelect
+        
           userId={formData.userId}
           handleChange={handleChange}
         />

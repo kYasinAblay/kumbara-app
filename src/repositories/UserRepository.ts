@@ -1,5 +1,5 @@
 import UserService from "../api/UserService";
-import { User } from "../models/User";
+import { User, UserResponse } from "../models/User";
 
 
 class UserRepository {
@@ -11,13 +11,13 @@ class UserRepository {
     return await UserService.update(user);
   }
 
-  //  async add(user: User): Promise<User> {
-  //   return await UserService.create(box);
-  // }
+   async add(user: User): Promise<UserResponse> {
+      return await UserService.create(user);
+  }
 
-  // async remove(id: string): Promise<void> {
-  //   return await UserService.deleteById(id);
-  // }
+  async remove(id: string): Promise<boolean> {
+    return await UserService.deleteUser(id);
+  }
 }
 
 export default new UserRepository();

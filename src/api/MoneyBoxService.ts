@@ -2,7 +2,23 @@ import BaseApiService from "./BaseApiService";
 import { MoneyBox } from "../models/MoneyBox";
 
 class MoneyBoxService extends BaseApiService {
-  async getList(params?: string[]): Promise<MoneyBox[]> {
+
+
+  async getListWithParams(queryParams: Record<string, any>): Promise<{ data: MoneyBox[]; total: number }> {
+
+  queryParams.isDeleted = false; 
+
+    // Axios config objesi
+    const config = {
+      params: queryParams 
+    };
+
+  var request = await this.getWithConfig<{ data: MoneyBox[]; total: number }>("moneyboxlist", config);
+  
+  return request;
+  }
+
+  async getList(): Promise<MoneyBox[]> {
 
     var request = await this.get<MoneyBox[]>("moneyboxlist?isDeleted=false");
     return request;

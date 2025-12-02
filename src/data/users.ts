@@ -16,8 +16,8 @@ export const dummyUsers: UserWithPassword[] = [
     address: 'Bahariye Caddesi No:23, Kadıköy, İstanbul',
     picture: 'https://randomuser.me/api/portraits/men/45.jpg',
     moneyboxes: [
-      { id: "1", name: 'Tatil', city: 'Antalya', zone: 'Lara', amount: 1250.75, description:"",user_id:"",is_deleted: false },
-      { id: "2", name: 'Araba', city: 'İstanbul', zone: 'Ataşehir', amount: 3200.0,description:"",user_id:"", is_deleted: false },
+      { id: 1, name: 'Tatil', city: 'Antalya', zone: 'Lara', amount: 1250.75, description:"",user_id:"",is_deleted: false },
+      { id: 2, name: 'Araba', city: 'İstanbul', zone: 'Ataşehir', amount: 3200.0,description:"",user_id:"", is_deleted: false },
     ],
     is_deleted: false,
     district:"",
@@ -35,8 +35,8 @@ export const dummyUsers: UserWithPassword[] = [
     address: 'Atatürk Bulvarı No:45, Çankaya, Ankara',
     picture: 'https://randomuser.me/api/portraits/women/62.jpg',
     moneyboxes: [
-      { id: "3", name: 'Eğitim', city: 'Ankara', zone: 'Kızılay', amount: 2100.5,description:"",user_id:"", is_deleted: false },
-      { id: "4", name: 'Ev', city: 'İzmir', zone: 'Bornova', amount: 5000.0,description:"",user_id:"", is_deleted: true },
+      { id: 3, name: 'Eğitim', city: 'Ankara', zone: 'Kızılay', amount: 2100.5,description:"",user_id:"", is_deleted: false },
+      { id: 4, name: 'Ev', city: 'İzmir', zone: 'Bornova', amount: 5000.0,description:"",user_id:"", is_deleted: true },
     ],
     is_deleted: false,
     district:"",
@@ -54,7 +54,7 @@ export const dummyUsers: UserWithPassword[] = [
     address: 'Gazi Bulvarı No:10, Konak, İzmir',
     picture: 'https://randomuser.me/api/portraits/men/77.jpg',
     moneyboxes: [
-      { id: "5", name: 'Yatırım', city: 'İzmir', zone: 'Karşıyaka', amount: 900.25,description:"",user_id:"", is_deleted: false },
+      { id: 5, name: 'Yatırım', city: 'İzmir', zone: 'Karşıyaka', amount: 900.25,description:"",user_id:"", is_deleted: false },
     ],
     is_deleted: false,
    district:"",

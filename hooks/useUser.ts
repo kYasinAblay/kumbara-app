@@ -14,7 +14,7 @@ export default function useUser() {
     const fetchUser = async () => {
         try {
             await UserService.getMe().then((data) => {
-                setMoneyBoxes(data.user.moneyboxes);
+                setMoneyBoxes(data.user.moneyboxes!);
                 const sanitized = { ...data.user, moneyboxes: [] };
                 setUser(sanitized);
             });
@@ -28,8 +28,6 @@ export default function useUser() {
     const updateUser = (data: Omit<User, "created_at" | "is_deleted" | "role" |"moneyboxes">) => {
         updateUserStore(data);
     };
-
-    
 
     useEffect(() => {
         fetchUser();

@@ -10,7 +10,6 @@ let initialized = false;
 export const SyncService = {
 
   init() {
-debugger;
      if (initialized) {
       console.log("SyncService already initialized – skipping");
       return;
@@ -66,7 +65,7 @@ debugger;
 
     // REMOVE
     EventBus.on("MONEYBOX_REMOVED", async (id) => {
-      debugger;
+    
       try {
         await MoneyBoxRepository.remove(id);
         console.log("%cSynced DELETE → API", "color: red");
@@ -74,5 +73,9 @@ debugger;
         console.warn("Delete sync failed:", err);
       }
     });
+
+
+    //USER 
+
   },
 };

@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import SessionCookieStore from "../session/SessionCookieStore";
 import { API_BASE_URL_ANDROID, API_BASE_URL_IOS } from "../utils/ApiConfig";
 import { Platform } from "react-native";
@@ -44,6 +44,11 @@ export default class BaseApiService {
         );
   }
 
+  protected async getWithConfig<T>(url: string,config?:AxiosRequestConfig): Promise<T> {
+    const response = await this.client.get<T>(url,config);
+    return response.data;
+  }
+
   protected async get<T>(url: string): Promise<T> {
     const response = await this.client.get<T>(url);
     return response.data;
@@ -51,6 +56,11 @@ export default class BaseApiService {
 
   protected async post<T>(url: string, data?: any): Promise<T> {
     const response = await this.client.post<T>(url, data);
+    return response.data;
+  }
+
+    protected async put<T>(url: string, data?: any): Promise<T> {
+    const response = await this.client.put<T>(url, data);
     return response.data;
   }
 
