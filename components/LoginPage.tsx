@@ -28,6 +28,7 @@ export default function LoginPage({ onLogin }) {
 
   const handleLogin = async () => {
     try {
+      debugger;
       showLoading();
       console.log(loginData); 
       var check = await authRepository.login(loginData);

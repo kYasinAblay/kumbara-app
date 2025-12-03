@@ -9,11 +9,15 @@ import {
   Alert,
 } from "react-native";
 import UserRepository from "@/src/repositories/UserRepository";
-import { User } from "../src/models/User";
+import { User, Credentials } from "../src/models/User";
 import { getCityNameById } from "@/hooks/getCityNameById";
 import { Plus, Trash, UserPlus } from "lucide-react-native";
 import AddUserModal from "./AddUserModal";
 import { useLoading } from "@/context/LoadingContext";
+import ShowUserInformationModal from "./UserEditModal";
+import UserEditModal from "./UserEditModal";
+import { UserWithPassword } from "@/src/data/users";
+import Sleep from "@/src/utils/Sleep";
 
 interface Props {
   userId: string;
@@ -23,8 +27,13 @@ interface Props {
 export default function UserSelect({ userId, handleChange }: Props) {
   console.log("UserSelect rendered");
   const [userModal, setUserModal] = useState(false);
-  const [userList, setUserList] = useState<User[]>();
+  const [userList, setUserList] = useState<UserWithPassword[]>();
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+
+  const [selectedUser, setSelectedUser] = useState<UserWithPassword | null>(
+    null
+  );
+  const [modalVisible, setModalVisible] = useState(false);
 
   const getUsers = async () => {
     const response = await UserRepository.fetchAll();
@@ -57,7 +66,8 @@ export default function UserSelect({ userId, handleChange }: Props) {
           text: "Evet, Sil",
           style: "destructive",
           onPress: async () => {
-            try {debugger;
+            try {
+              debugger;
               await UserRepository.remove(userId);
               setUserList((prev) => prev?.filter((u) => u.id !== userId));
             } catch (error) {
@@ -67,7 +77,7 @@ export default function UserSelect({ userId, handleChange }: Props) {
         },
       ]
     );
-  },[]);
+  }, []);
 
   const handleAddUser = useCallback(async (user: User) => {
     console.log("user to add: userselect.tsx");
@@ -87,6 +97,24 @@ export default function UserSelect({ userId, handleChange }: Props) {
     setIsAddUserModalOpen(false);
     console.log("user to add: userselect.tsx => finish");
   }, []);
+
+  const handleUpdateUser = useCallback(
+    async (userId: string, credentials: Credentials) => {
+   
+      var response = await UserRepository.updatePassword(userId, credentials);
+      if (!response.success) {
+        alert("Kullanıcı güncellenemedi");
+        return;
+      }
+      setModalVisible(false);
+    },
+    []
+  );
+
+  const openModal = (user: UserWithPassword) => {
+    setSelectedUser(user);
+    setModalVisible(true);
+  };
 
   return (
     <View>
@@ -122,6 +150,7 @@ export default function UserSelect({ userId, handleChange }: Props) {
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={[styles.modalItem, styles.userRow]}
+                onLongPress={() => openModal(item)}
                 onPress={() => {
                   handleChange("userId", item.id!);
                   handleChange("city", getCityNameById(item.city)!);
@@ -147,13 +176,21 @@ export default function UserSelect({ userId, handleChange }: Props) {
                   ) : null}
                 </View>
                 {/* Silme Butonu */}
-                <TouchableOpacity hitSlop={{ top: 30, bottom: 30, left: 30, right: 30 }} onPress={() => handleDeleteUser(item.id!)}>
+                <TouchableOpacity
+                  hitSlop={{ top: 30, bottom: 30, left: 30, right: 30 }}
+                  onPress={() => handleDeleteUser(item.id!)}
+                >
                   <Trash size={20} color="#dc2626" />
                 </TouchableOpacity>
               </TouchableOpacity>
             )}
           />
-
+          <UserEditModal
+            visible={modalVisible}
+            user={selectedUser}
+            onClose={() => setModalVisible(false)}
+            onSubmit={handleUpdateUser}
+          />
           <TouchableOpacity
             onPress={() => setUserModal(false)}
             style={styles.modalClose}
@@ -260,7 +297,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderColor: "#eee",
-    alignItems: "center"
+    alignItems: "center",
   },
   userAvatar: {
     width: 48,

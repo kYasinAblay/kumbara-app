@@ -24,3 +24,7 @@ export interface UserResponse {
  user:UserWithPassword;
 }
 
+export interface Credentials {
+  username: string;
+  password: string;
+}

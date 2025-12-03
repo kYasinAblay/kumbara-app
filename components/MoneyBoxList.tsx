@@ -66,6 +66,8 @@ export function MoneyBoxList({
   const hasFilters =
     searchTerm !== '' || selectedCity !== 'all' || sortBy !== 'date';
    const {isAdmin} = useAuthorization();
+
+
   return (
     <View style={styles.container}>
       {/* 🔍 Search bar */}
@@ -112,7 +114,7 @@ export function MoneyBoxList({
         </View>
       ) : selectedCity === 'all' ? (
         // 🏙️ Grouped by City
-        <ScrollView showsVerticalScrollIndicator={false} style={{marginBottom:110}}>
+        <ScrollView showsVerticalScrollIndicator={false}>
           {Object.entries(grouped).map(([city, boxes]) =>
             boxes.length ? (
               <View key={city} style={styles.cityGroup}>
@@ -146,7 +148,7 @@ export function MoneyBoxList({
               onUpdateAmount={onUpdateAmount}
             />
           )}
-          contentContainerStyle={{ paddingBottom: 60 }}
+          contentContainerStyle={{ paddingBottom: 20 }}
         />
       )}
 
@@ -203,7 +205,7 @@ export function MoneyBoxList({
 }
 
 const styles = StyleSheet.create({
-  container: { marginTop: -10 },
+  container: { flex: 1,marginBottom:-24 },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -245,7 +247,7 @@ const styles = StyleSheet.create({
   emptyEmoji: { fontSize: 32, marginBottom: 8 },
   emptyText: { color: '#4b5563', fontSize: 14, fontWeight: '600' },
   emptySub: { color: '#6b7280', fontSize: 12 },
-  cityGroup: { marginBottom: 20 },
+  cityGroup: { marginBottom: 10 },
   cityHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -258,7 +260,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     backgroundColor: '#fff',
-    padding: 20,
+    padding: 20
   },
   modalTitle: {
     fontSize: 18,

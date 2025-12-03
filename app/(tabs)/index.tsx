@@ -25,9 +25,11 @@ import {
 import { MoneyBox } from "../../src/models/MoneyBox";
 import { MoneyBoxList } from "../../components/MoneyBoxList";
 import useUser from "@/hooks/useUser";
+
 import { getCityNameById } from "@/hooks/getCityNameById";
 import { useMoneyBoxStore } from "@/src/store/moneyBoxStore";
 import { NetworkGuard } from "@/src/core/network/NetworkGuard";
+import getMoneyBox from "@/hooks/getMoneyBox";
 
 export default function HomeScreen() {
   const {
@@ -41,8 +43,10 @@ export default function HomeScreen() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBox, setEditingBox] = useState<MoneyBox | null>(null);
+const [cityModalVisible, setCityModalVisible] = useState(false);
 
   const { user, loading } = useUser();
+  getMoneyBox();
   // 📦 Load data
   useEffect(() => {
     const loadData = async () => {
@@ -65,7 +69,6 @@ export default function HomeScreen() {
       is_deleted: false,
     }));
   };
-
 
   useEffect(() => {
     setEditingBox({
@@ -92,7 +95,6 @@ export default function HomeScreen() {
 
       addMoneyBox(newBox);
 
- 
       reInitial();
       setIsDialogOpen(false);
     },
@@ -128,13 +130,13 @@ export default function HomeScreen() {
   if (loading)
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size={"large"} style={{ marginTop: -50 }} />
+        <ActivityIndicator size={"large"} style={{ marginTop: 0 }} />
       </View>
     );
 
   return (
-   <NetworkGuard protectAfterLogin> 
-      <SafeAreaView style={[styles.safeArea, styles.container]}>
+    <NetworkGuard protectAfterLogin>
+      <SafeAreaView style={[styles.safeArea]}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
@@ -146,17 +148,23 @@ export default function HomeScreen() {
               <Text style={styles.subtitle}>Birikimlerinizi yönetin</Text>
             </View>
           </View>
+          <View style={{flexDirection:"row",alignItems:"center"}}>
+           
           <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => setIsDialogOpen(true)}
+            onPress={() => setCityModalVisible(true)}
+            style={styles.cityButton}
           >
-            <Ionicons name="add" size={18} color="#fff" />
-            <Text style={styles.addText}>Yeni</Text>
-          </TouchableOpacity>
+            <Ionicons name="stats-chart" size={20} color="#fff" />
+          </TouchableOpacity> 
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => setIsDialogOpen(true)}
+            >
+              <Ionicons name="add" size={18} color="#fff" />
+              <Text style={styles.addText}>Yeni</Text>
+            </TouchableOpacity>
+           </View>
         </View>
-
-        {/* Dashboard */}
-        <Dashboard moneyBoxes={moneyBoxes} />
 
         {/* Money Box List */}
         <MoneyBoxList
@@ -166,6 +174,29 @@ export default function HomeScreen() {
           onUpdateAmount={updateAmount}
         />
 
+        {/* Dashboard */}
+        {/* <Dashboard moneyBoxes={moneyBoxes} /> */}
+
+      
+
+        <Modal visible={cityModalVisible} animationType="slide" transparent>
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalBox}>
+      {/* <Text style={styles.modalTitle}>Şehirlere Göre</Text> */}
+
+        <Dashboard moneyBoxes={moneyBoxes} />
+
+      <TouchableOpacity
+        style={styles.closeButton}
+        onPress={() => setCityModalVisible(false)}
+      >
+        <Text style={styles.closeButtonText}>Kapat</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
+
+  {/* ⚙️ Filter Modal */}       
         {/* Dialog for Create/Edit */}
         <Dialog visible={isDialogOpen} onClose={handleCloseDialog}>
           <DialogContent>
@@ -188,20 +219,17 @@ export default function HomeScreen() {
           </DialogContent>
         </Dialog>
       </SafeAreaView>
-   </NetworkGuard>
+    </NetworkGuard>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#eef2ff", // from-blue-50 via-indigo-50 to-purple-50
-  },
-  container: {
-    flex: 1,
+    backgroundColor: "#eef2ff", //#eef2ff
     paddingHorizontal: 16,
-    padding: 20,
   },
+
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -246,5 +274,55 @@ const styles = StyleSheet.create({
     color: "#fff",
     marginLeft: 6,
     fontWeight: "600",
+  },
+
+  modalContainer: {
+    backgroundColor: "#fff",
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#111827",
+    marginBottom: 12,
+  }, cityButton: {
+    backgroundColor: "#016840",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    marginRight: 8,
+  },
+
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.3)",
+  },
+
+  modalBox: {
+    width: "85%",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+  },
+
+  // modalTitle: {
+  //   fontSize: 16,
+  //   fontWeight: "700",
+  //   marginBottom: 14,
+  //   color: "#374151",
+  // },
+
+  closeButton: {
+    marginTop: 18,
+    backgroundColor: "#016840",
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  closeButtonText: {
+    textAlign: "center",
+    color: "#fff",
+    fontWeight: "700",
   },
 });

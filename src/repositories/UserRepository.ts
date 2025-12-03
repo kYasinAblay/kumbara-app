@@ -1,5 +1,5 @@
 import UserService from "../api/UserService";
-import { User, UserResponse } from "../models/User";
+import { Credentials, User, UserResponse } from "../models/User";
 
 
 class UserRepository {
@@ -15,6 +15,10 @@ class UserRepository {
       return await UserService.create(user);
   }
 
+
+   async updatePassword(userId:string,credential:Credentials): Promise<UserResponse> {
+      return await UserService.updatePassword(userId,credential);
+  }
   async remove(id: string): Promise<boolean> {
     return await UserService.deleteUser(id);
   }
