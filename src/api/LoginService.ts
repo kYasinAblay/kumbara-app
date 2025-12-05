@@ -11,6 +11,9 @@ class LoginService extends BaseApiService {
   async login(user: LoginRequest): Promise<Check> {
     return this.post<Check>("login", user);
   }
+    async register(user: LoginRequest): Promise<Check> {
+    return this.post<Check>("register", user);
+  }
   async logout(): Promise<Logout> {
     return this.post<Logout>("logout");
   }

@@ -6,7 +6,7 @@ import { Me } from "../models/Me";
 class UserService extends BaseApiService {
 
   async getList(params?: string[]): Promise<User[]> {
-    var request = await this.get<User[]>("users");
+    var request = await this.get<User[]>("users?isDeleted=false");
     return request;
   }
   

@@ -56,8 +56,7 @@ export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }:
   };
 
 
-  
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
 
     onUpdateUser({
       id: formData.id,
@@ -71,7 +70,8 @@ export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }:
       address: formData.address
     });
 
-    UserRepository.update({ ...formData});
+console.log({...formData});
+    await UserRepository.update({ ...formData});
     setIsEditing(false);
   };
 
@@ -99,7 +99,7 @@ export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }:
 
 
 
-  const getInitials = () => {
+  const getFullName = () => {
     return `${user?.name[0]}${user?.surname[0]}`.toUpperCase();
   };
 
@@ -147,7 +147,7 @@ export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }:
       <View style={[styles.card]}>
         <View style={styles.profileHeader}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{getInitials()}</Text>
+            <Text style={styles.avatarText}>{getFullName()}</Text>
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.nameText}>
@@ -155,7 +155,7 @@ export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }:
             </Text>
             <Text style={styles.memberText}>
               <Ionicons name="calendar-outline" size={14} /> Üyelik:{' '}
-              {DateUtils.formatDate(user?.created_at!.toString())}
+              {DateUtils.formatDate(user?.created_at!?.toString())}
             </Text>
           </View>
 
@@ -195,7 +195,7 @@ export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }:
               <Text style={styles.label}>Telefon</Text>
               <TextInput
                 keyboardType="phone-pad"
-                value={formData.phone.toString()}
+                value={formData.phone?.toString()}
                 onChangeText={(v) => handleChange('phone', v)}
                 style={styles.input}
               />
@@ -346,8 +346,8 @@ export default function ProfilePage({ user,moneyBoxes, onUpdateUser, onLogout }:
     {/* STATUS */}
     <View>
       <Text style={styles.infoLabel}>Durum</Text>
-      <View style={[styles.badge, { backgroundColor: "#22c55e", alignSelf: "flex-start" }]}>
-        <Text style={[styles.badgeText, { color: "#fff" }]}>Aktif</Text>
+      <View style={[styles.badge, { backgroundColor: user?.status ==="active"? "#22c55e" : "red", alignSelf: "flex-start" }]}>
+        <Text style={[styles.badgeText, { color: "#fff" }]}>{user?.status ==="active"?"Aktif":"Pasif"}</Text>
       </View>
     </View>
 

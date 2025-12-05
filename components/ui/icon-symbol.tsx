@@ -23,6 +23,8 @@ const MAPPING = {
   'wallet.pass.fill':'attach-money',
   'box.truck.fill':'contacts',
   'box.truck':'savings',
+  'wallet.bifold':'local-play',
+  'dollarsign.circle':'stars'
 } as IconMapping;
 
 /**

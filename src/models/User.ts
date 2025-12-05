@@ -12,6 +12,7 @@ export interface User {
   district:string;
   address: string;
   picture: string;
+  status:string;
   moneyboxes?: MoneyBox[];
   role?:string,
   is_deleted?: boolean;

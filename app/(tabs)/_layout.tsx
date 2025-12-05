@@ -23,11 +23,20 @@ export default function TabLayout() {
           title: 'Profil',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="box.truck.fill" color={color} />,
         }} />,
-      <Tabs.Screen
+
+      {/* <Tabs.Screen
         name="index"
         options={{
           title: 'Kumbaralar',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="box.truck" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="wallet.bifold" color={color} />,
+        }}
+      /> */}
+
+        <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Kumbaralar',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="dollarsign.circle" color={color} />,
         }}
       />
     

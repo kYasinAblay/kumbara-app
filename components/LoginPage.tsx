@@ -15,26 +15,30 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import authRepository from "@/src/repositories/AuthRepository";
 import { useLoading } from "@/context/LoadingContext";
 import Sleep from "@/src/utils/Sleep";
+import { router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-
-export default function LoginPage({ onLogin }) {
+export default function LoginPage({ onLogin, onBackToLogin }) {
   const [loginData, setLoginData] = useState({
     username: "kyasinablay",
     password: "m0vks7z5j9",
   });
-  
- const {loading, showLoading, hideLoading } = useLoading();
 
+  const { loading, showLoading, hideLoading } = useLoading();
+
+  const handleNavigateRegister = () => {
+    onBackToLogin((prev) => !prev);
+  };
 
   const handleLogin = async () => {
     try {
       debugger;
       showLoading();
-      console.log(loginData); 
+      console.log(loginData);
       var check = await authRepository.login(loginData);
 
       if (check.success !== undefined && check.success) {
-        onLogin(loginData);
+        onLogin();
       } else {
         Alert.alert("Hata", "Kullanıcı bulunamadı veya şifre hatalı!");
       }
@@ -50,88 +54,94 @@ export default function LoginPage({ onLogin }) {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* Logo */}
-        <View style={styles.logoContainer}>
-          <View style={styles.logoCircle}>
-            <Ionicons name="cash-outline" size={36} color="#fff" />
+      <SafeAreaView style={{flex:1,justifyContent:"center"}}>
+        <ScrollView 
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Logo */}
+          <View style={styles.logoContainer}>
+            <View style={styles.logoCircle}>
+              <Ionicons name="cash-outline" size={36} color="#fff" />
+            </View>
+            <Text style={styles.title}>Kumbara Uygulaması</Text>
+            <Text style={styles.subtitle}>Birikimlerinizi kolayca yönetin</Text>
           </View>
-          <Text style={styles.title}>Kumbara Uygulaması</Text>
-          <Text style={styles.subtitle}>Birikimlerinizi kolayca yönetin</Text>
-        </View>
 
-        {/* Login Form */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Hoş Geldiniz</Text>
-          <Text style={styles.cardSubtitle}>Devam etmek için giriş yapın</Text>
-
-          <View style={{ marginTop: 16 }}>
-            <Text style={styles.label}>Kullanıcı Adı</Text>
-            <View style={styles.inputContainer}>
-              <Ionicons
-                name="mail-outline"
-                size={20}
-                color={"black"}
-                style={styles.inputIcon}
-              />
-              <TextInput
-                placeholder="Adınızı girin"
-                value={loginData.username}
-                onChangeText={(text) =>
-                  setLoginData({ ...loginData, username: text })
-                }
-                style={styles.input}
-                autoCapitalize="none"
-                keyboardType="email-address"
-              />
-            </View>
-
-            <Text style={[styles.label, { marginTop: 12 }]}>Şifre</Text>
-            <View style={styles.inputContainer}>
-              <Ionicons
-                name="lock-closed-outline"
-                size={20}
-                color="black"
-                style={styles.inputIcon}
-              />
-              <TextInput
-                placeholder="Şifrenizi girin"
-                value={loginData.password}
-                onChangeText={(text) =>
-                  setLoginData({ ...loginData, password: text })
-                }
-                style={styles.input}
-                secureTextEntry
-              />
-            </View>
-
-            <TouchableOpacity
-              style={styles.loginButton}
-              disabled={loading}
-              onPress={handleLogin}
-            >
-              {loading ? (
-                
-                <ActivityIndicator style={{ width: 40 }} color="#fff" />
-              ) : (
-                <Text style={styles.loginButtonText}>Giriş Yap</Text>
-              )}
-            </TouchableOpacity>
-
-            <Text style={styles.hintText}>
-              Demo için herhangi bir kullanıcı adı girebilirsiniz
+          {/* Login Form */}
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Hoş Geldiniz</Text>
+            <Text style={styles.cardSubtitle}>
+              Devam etmek için giriş yapın
             </Text>
-          </View>
-        </View>
 
-        {/* Footer */}
-        <Text style={styles.footer}>
-          © 2025 Kumbara Uygulaması - Tüm hakları saklıdır
-        </Text>
-      </ScrollView>
+            <View style={{ marginTop: 16 }}>
+              <Text style={styles.label}>Kullanıcı Adı</Text>
+              <View style={styles.inputContainer}>
+                <Ionicons
+                  name="mail-outline"
+                  size={20}
+                  color={"black"}
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  placeholder="Adınızı girin"
+                  value={loginData.username}
+                  onChangeText={(text) =>
+                    setLoginData({ ...loginData, username: text })
+                  }
+                  style={styles.input}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                />
+              </View>
+
+              <Text style={[styles.label, { marginTop: 12 }]}>Şifre</Text>
+              <View style={styles.inputContainer}>
+                <Ionicons
+                  name="lock-closed-outline"
+                  size={20}
+                  color="black"
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  placeholder="Şifrenizi girin"
+                  value={loginData.password}
+                  onChangeText={(text) =>
+                    setLoginData({ ...loginData, password: text })
+                  }
+                  style={styles.input}
+                  secureTextEntry
+                />
+              </View>
+
+              <TouchableOpacity
+                style={styles.loginButton}
+                disabled={loading}
+                onPress={handleLogin}
+              >
+                {loading ? (
+                  <ActivityIndicator style={{ width: 40 }} color="#fff" />
+                ) : (
+                  <Text style={styles.loginButtonText}>Giriş Yap</Text>
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={handleNavigateRegister}>
+                <Text style={styles.backText}>Hesabın yok mu? Kayıt ol</Text>
+              </TouchableOpacity>
+              <Text style={styles.hintText}>
+                Demo için herhangi bir kullanıcı adı girebilirsiniz
+              </Text>
+            </View>
+          </View>
+
+          {/* Footer */}
+          <Text style={styles.footer}>
+            © 2025 Kumbara Uygulaması - Tüm hakları saklıdır
+          </Text>
+        </ScrollView>
+      </SafeAreaView>
     </KeyboardAvoidingView>
   );
 }
@@ -142,7 +152,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#eef2ff",
     justifyContent: "center",
     alignItems: "center",
-    padding: 30
+    padding: 30,
   },
   logoContainer: {
     alignItems: "center",
@@ -206,7 +216,7 @@ const styles = StyleSheet.create({
     left: 10,
     top: "50%",
     marginTop: -10,
-    zIndex:1
+    zIndex: 1,
   },
   input: {
     borderWidth: 1,
@@ -216,7 +226,7 @@ const styles = StyleSheet.create({
     //paddingLeft: 36,
     fontSize: 14,
     backgroundColor: "#fff",
-    textAlign: 'center'
+    textAlign: "center",
   },
   loginButton: {
     backgroundColor: "#016840",
@@ -235,6 +245,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#6b7280",
     fontSize: 12,
+  },
+  backText: {
+    marginTop: 12,
+    textAlign: "center",
+    color: "#4f46e5",
   },
   footer: {
     marginTop: 24,

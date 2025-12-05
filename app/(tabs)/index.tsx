@@ -29,7 +29,7 @@ import useUser from "@/hooks/useUser";
 import { getCityNameById } from "@/hooks/getCityNameById";
 import { useMoneyBoxStore } from "@/src/store/moneyBoxStore";
 import { NetworkGuard } from "@/src/core/network/NetworkGuard";
-import getMoneyBox from "@/hooks/getMoneyBox";
+import { X } from "lucide-react-native";
 
 export default function HomeScreen() {
   const {
@@ -43,10 +43,10 @@ export default function HomeScreen() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBox, setEditingBox] = useState<MoneyBox | null>(null);
-const [cityModalVisible, setCityModalVisible] = useState(false);
+  const [cityModalVisible, setCityModalVisible] = useState(false);
 
   const { user, loading } = useUser();
-  getMoneyBox();
+
   // 📦 Load data
   useEffect(() => {
     const loadData = async () => {
@@ -148,14 +148,14 @@ const [cityModalVisible, setCityModalVisible] = useState(false);
               <Text style={styles.subtitle}>Birikimlerinizi yönetin</Text>
             </View>
           </View>
-          <View style={{flexDirection:"row",alignItems:"center"}}>
-           
-          <TouchableOpacity
-            onPress={() => setCityModalVisible(true)}
-            style={styles.cityButton}
-          >
-            <Ionicons name="stats-chart" size={20} color="#fff" />
-          </TouchableOpacity> 
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {moneyBoxes.length > 1 && <TouchableOpacity
+              onPress={() => setCityModalVisible(true)}
+              style={styles.cityButton}
+            >
+              <Ionicons name="stats-chart" size={20} color="#fff" />
+            </TouchableOpacity>
+            }           
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => setIsDialogOpen(true)}
@@ -163,7 +163,7 @@ const [cityModalVisible, setCityModalVisible] = useState(false);
               <Ionicons name="add" size={18} color="#fff" />
               <Text style={styles.addText}>Yeni</Text>
             </TouchableOpacity>
-           </View>
+          </View>
         </View>
 
         {/* Money Box List */}
@@ -177,26 +177,22 @@ const [cityModalVisible, setCityModalVisible] = useState(false);
         {/* Dashboard */}
         {/* <Dashboard moneyBoxes={moneyBoxes} /> */}
 
-      
-
         <Modal visible={cityModalVisible} animationType="slide" transparent>
-  <View style={styles.modalOverlay}>
-    <View style={styles.modalBox}>
-      {/* <Text style={styles.modalTitle}>Şehirlere Göre</Text> */}
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalBox}>
+              {/* <Text style={styles.modalTitle}>Şehirlere Göre</Text> */}
+              <TouchableOpacity
+                onPress={() => setCityModalVisible(false)}
+                style={{ alignSelf: "flex-end",top:-10,right:-5,backgroundColor:"red", borderRadius:"50%"}}
+              >
+                <X size={21} color="#f0f0f0f0" />
+              </TouchableOpacity>
+              <Dashboard moneyBoxes={moneyBoxes} />
+            </View>
+          </View>
+        </Modal>
 
-        <Dashboard moneyBoxes={moneyBoxes} />
-
-      <TouchableOpacity
-        style={styles.closeButton}
-        onPress={() => setCityModalVisible(false)}
-      >
-        <Text style={styles.closeButtonText}>Kapat</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-</Modal>
-
-  {/* ⚙️ Filter Modal */}       
+        {/* ⚙️ Filter Modal */}
         {/* Dialog for Create/Edit */}
         <Dialog visible={isDialogOpen} onClose={handleCloseDialog}>
           <DialogContent>
@@ -285,7 +281,8 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#111827",
     marginBottom: 12,
-  }, cityButton: {
+  },
+  cityButton: {
     backgroundColor: "#016840",
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -305,6 +302,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 12,
     padding: 20,
+    position:"relative"
   },
 
   // modalTitle: {

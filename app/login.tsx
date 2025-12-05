@@ -16,19 +16,22 @@ import { useRouter } from "expo-router";
 import { LoginRequest } from "@/src/models/LoginRequest";
 import Sleep from "@/src/utils/Sleep";
 import { NetworkGuard } from "@/src/core/network/NetworkGuard";
+import RegisterScreen from "@/components/Register";
+import { useLoading } from "@/context/LoadingContext";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const [loginOrRegister,setLoginOrRegister] = useState(true);
+ 
 
-  const handleLogin = (login: LoginRequest) => {
-    //boş kontrol yapılacak
-    console.log("Giriş yapan kullanıcı:", login);
+  const handleLogin = () => {
     Sleep(1000).then(() => router.push("/profile"));
   };
 
+
   return (
     <NetworkGuard>
-      <LoginPage onLogin={handleLogin} />
+     {loginOrRegister?<LoginPage  onBackToLogin={setLoginOrRegister} onLogin={handleLogin} />:<RegisterScreen  onBackToLogin={setLoginOrRegister} onLogin={handleLogin}/>} 
     </NetworkGuard>
   );
 }

@@ -20,7 +20,7 @@ export default function ExploreScreen() {
   const router = useRouter();
 
   const activeBoxes = moneyBoxes.filter(box => !box.is_deleted);
-  
+  debugger;
   const {isAdmin} = useAuthorization();
   if (!isAdmin) {
    

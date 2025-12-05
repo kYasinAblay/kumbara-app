@@ -24,7 +24,7 @@ export default function CityDistrictSelect({ formData, handleChange,titleVisible
   const [districtModal, setDistrictModal] = useState(false);
 
   const filteredDistricts = districts.filter(
-    (d) => d.sehir_id === formData.city.toString()
+    (d) => d.sehir_id === formData.city?.toString()
   );
 
   return (
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     padding: 20,
-    marginTop: 40,
+    marginTop: 40
   },
   modalTitle: {
     fontWeight: "bold",
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   modalItem: {
     padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: "#eee"
   },
   modalClose: {
     padding: 15,

@@ -1,5 +1,5 @@
 import LoginService from "../api/LoginService";
-import { LoginRequest } from "../models/LoginRequest";
+import { LoginRequest, RegisterRequest } from "../models/LoginRequest";
 import { User } from "../models/User";
 import { Check } from "../models/Check";
 import { Logout } from "../models/Logout";
@@ -9,6 +9,10 @@ import { Me } from "../models/Me";
 class AuthRepository {
   async login(user: LoginRequest): Promise<Check> {
     return await LoginService.login(user);
+  }
+
+    async register(user: RegisterRequest): Promise<Check> {
+    return await LoginService.register(user);
   }
 
   async logout(): Promise<Logout> {
