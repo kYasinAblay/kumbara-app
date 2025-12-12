@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import SessionCookieStore from "../session/SessionCookieStore";
-import { API_BASE_URL_ANDROID, API_BASE_URL_IOS } from "../utils/ApiConfig";
+import { API_BASE_URL_ANDROID, API_BASE_URL_IOS, API_URL } from "../utils/ApiConfig";
 import { Platform } from "react-native";
 
 export default class BaseApiService {
@@ -8,7 +8,7 @@ export default class BaseApiService {
 
   constructor() {
     this.client = axios.create({
-      baseURL: Platform.OS === "android" ? API_BASE_URL_ANDROID : API_BASE_URL_IOS,
+      baseURL: Platform.OS === "android" ? API_URL : API_BASE_URL_IOS,
       headers: {
         "Content-Type": "application/json",
       },
