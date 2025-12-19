@@ -20,19 +20,19 @@ export default function ExploreScreen() {
   const router = useRouter();
 
   const activeBoxes = moneyBoxes.filter(box => !box.is_deleted);
-  debugger;
-  const {isAdmin} = useAuthorization();
-  if (!isAdmin) {
+  
+  // const {isAdmin} = useAuthorization();
+  // if (!isAdmin) {
    
-    return <View><AlertDialog
-            visible={true}
-            onClose={() => setIsDialogOpen(false)}
-            title="Yetkiniz Yok"
-            description={`Bu tab'a girmek için yetkiniz bulunmamaktadır.`}
-            confirmText="Tamam"
-            onConfirm={()=>router.navigate("/(tabs)")}
-          /></View>;
-  }
+  //   return <View><AlertDialog
+  //           visible={true}
+  //           onClose={() => setIsDialogOpen(false)}
+  //           title="Yetkiniz Yok"
+  //           description={`Bu tab'a girmek için yetkiniz bulunmamaktadır.`}
+  //           confirmText="Tamam"
+  //           onConfirm={()=>router.navigate("/(tabs)")}
+  //         /></View>;
+  // }
 //dropdownbox ile yıllık kazanç grafiği ekleyebiliriz
   return (
      <SafeAreaView style={[styles.safeArea, styles.container]}>
