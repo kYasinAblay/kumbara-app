@@ -5,7 +5,7 @@ import DateUtils from "../utils/DateUtils";
 
 
 export async function performSessionCheck() {
-    console.log("Controller > performSessionCheck çalışıyor",DateUtils.formatDateTime(new Date().toISOString()));
+    console.log("Controller > performSessionCheck çalışıyor", DateUtils.formatDateTime(new Date().toISOString()));
   
   const cookie = SessionCookieStore.get();
   if (!cookie) return { ok: false };
