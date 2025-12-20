@@ -3,7 +3,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { router, Stack, useRouter } from "expo-router";
+import { Redirect, router, Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 import { useFonts } from "expo-font";
@@ -16,13 +16,14 @@ import LoadingOverlay from "@/components/LoadingOverlay";
 import  "@/src/bootstrap";
 import { performSessionCheck } from "@/src/controllers/SessionController";
 import { SessionWatcher } from "@/src/session/SessionWatcher";
+import SessionCookieStore from "@/src/session/SessionCookieStore";
 
 export const unstable_settings = {
   anchor: "(tabs)",
 };
 
 function AuthGuard() {
-  const { userId, loading,logout } = useAuth();
+  const { loading,logout } = useAuth();
   const [checked, setChecked] = useState(false);
   const [ok, setOk] = useState(false);
 
@@ -43,6 +44,9 @@ function AuthGuard() {
     };
   }, []);
 
+   const cookie = SessionCookieStore.get();
+
+  // if (!cookie) return <Redirect href="/login" />;
  
   if (!loading || !checked) {
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -57,7 +61,7 @@ function AuthGuard() {
           contentStyle: { backgroundColor: "#fff" },
           headerTitleStyle: { fontFamily: "Inter" },
         }}
-        initialRouteName={userId ? "(tabs)" : "login"}
+        initialRouteName={ !cookie ? "(tabs)" : "login"}
       >
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

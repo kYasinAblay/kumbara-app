@@ -18,6 +18,8 @@ import Sleep from "@/src/utils/Sleep";
 import { NetworkGuard } from "@/src/core/network/NetworkGuard";
 import RegisterScreen from "@/components/Register";
 import { useLoading } from "@/context/LoadingContext";
+import { getRememberMe, setRememberMe, saveToken } from "@/src/store/authStore";
+
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -25,6 +27,8 @@ export default function LoginScreen() {
  
 
   const handleLogin = () => {
+
+    
     Sleep(1000).then(() => router.push("/profile"));
   };
 

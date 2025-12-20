@@ -30,6 +30,9 @@ import { getCityNameById } from "@/hooks/getCityNameById";
 import { useMoneyBoxStore } from "@/src/store/moneyBoxStore";
 import { NetworkGuard } from "@/src/core/network/NetworkGuard";
 import { X } from "lucide-react-native";
+import SessionCookieStore from "@/src/session/SessionCookieStore";
+import { router } from "expo-router";
+import { useMoneyBoxes } from "@/hooks/getMoneyBox";
 
 export default function HomeScreen() {
   const {
@@ -44,12 +47,13 @@ export default function HomeScreen() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBox, setEditingBox] = useState<MoneyBox | null>(null);
   const [cityModalVisible, setCityModalVisible] = useState(false);
-
+const { refresh } = useMoneyBoxes();
   const { user, loading } = useUser();
 
   // 📦 Load data
   useEffect(() => {
     const loadData = async () => {
+      refresh();
       //  const saved = await AsyncStorage.getItem('moneyboxes');
       console.log("load data in index.tsx", moneyBoxes);
       setMoneyBoxes(moneyBoxes.filter((box) => !box.is_deleted));
@@ -78,8 +82,8 @@ export default function HomeScreen() {
       description: "",
       zone: "",
       is_deleted: false,
-      city: getCityNameById(user.city),
-      user_id: user.id,
+      city: getCityNameById(user?.city),
+      user_id: user?.id,
     });
   }, [user]);
 
@@ -90,7 +94,7 @@ export default function HomeScreen() {
         // id: Date.now().toString(),
         is_deleted: false,
         created_at: new Date().toISOString(),
-        user_id: user.id,
+        user_id: user?.id,
       };
 
       addMoneyBox(newBox);

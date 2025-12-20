@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Switch,
   ActivityIndicator,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -17,27 +18,51 @@ import { useLoading } from "@/context/LoadingContext";
 import Sleep from "@/src/utils/Sleep";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getRememberMe, setRememberMe, saveToken } from "@/src/store/authStore";
+import SessionCookieStore from "@/src/session/SessionCookieStore";
+import { getEmail, saveEmail } from "@/src/store/loginPrefs";
 
 export default function LoginPage({ onLogin, onBackToLogin }) {
   const [loginData, setLoginData] = useState({
-    username: "kyasinablay",
-    password: "m0vks7z5j9",
+    username: "",
+    password: "",
   });
-
+  const [remember, setRemember] = useState(true);
   const { loading, showLoading, hideLoading } = useLoading();
 
   const handleNavigateRegister = () => {
     onBackToLogin((prev) => !prev);
   };
 
+  const rememberMe = async (token?: string) => {
+
+    if (remember) {
+      await setRememberMe(true);
+      await saveToken(SessionCookieStore.get()!);
+    } else {
+      await setRememberMe(false);
+    }
+  };
+
+  useEffect(() => {
+  
+    getRememberMe().then((v) => setRemember(v));
+
+    getEmail().then((saved) => {
+      if (saved) {
+        setLoginData({ ...loginData, username: saved });
+      }
+    });
+  }, []);
+
   const handleLogin = async () => {
     try {
       debugger;
       showLoading();
-      console.log(loginData);
       var check = await authRepository.login(loginData);
 
       if (check.success !== undefined && check.success) {
+        rememberMe();
         onLogin();
       } else {
         Alert.alert("Hata", "Kullanıcı bulunamadı veya şifre hatalı!");
@@ -54,8 +79,8 @@ export default function LoginPage({ onLogin, onBackToLogin }) {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <SafeAreaView style={{flex:1,justifyContent:"center"}}>
-        <ScrollView 
+      <SafeAreaView style={{ flex: 1, justifyContent: "center" }}>
+        <ScrollView
           contentContainerStyle={styles.container}
           keyboardShouldPersistTaps="handled"
         >
@@ -113,6 +138,12 @@ export default function LoginPage({ onLogin, onBackToLogin }) {
                   style={styles.input}
                   secureTextEntry
                 />
+              </View>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+              >
+                <Switch value={remember} onValueChange={setRemember} />
+                <Text>Beni hatırla</Text>
               </View>
 
               <TouchableOpacity

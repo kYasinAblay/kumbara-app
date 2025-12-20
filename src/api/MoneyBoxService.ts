@@ -21,6 +21,8 @@ class MoneyBoxService extends BaseApiService {
   async getList(): Promise<MoneyBox[]> {
 
     var request = await this.get<MoneyBox[]>("moneyboxlist?isDeleted=false");
+   console.log(request);
+   
     return request;
   }
 
