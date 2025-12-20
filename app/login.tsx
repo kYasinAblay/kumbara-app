@@ -1,36 +1,24 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+
 import "react-native-reanimated";
-import { useFonts } from "expo-font";
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, {  useState } from "react";
+import { StyleSheet } from "react-native";
 import LoginPage from "@/components/LoginPage";
 import { useRouter } from "expo-router";
-import { LoginRequest } from "@/src/models/LoginRequest";
 import Sleep from "@/src/utils/Sleep";
 import { NetworkGuard } from "@/src/core/network/NetworkGuard";
 import RegisterScreen from "@/components/Register";
-import { useLoading } from "@/context/LoadingContext";
-import { getRememberMe, setRememberMe, saveToken } from "@/src/store/authStore";
-
 
 export default function LoginScreen() {
   const router = useRouter();
   const [loginOrRegister,setLoginOrRegister] = useState(true);
- 
+  
 
-  const handleLogin = () => {
-
-    
-    Sleep(1000).then(() => router.push("/profile"));
+  const handleLogin = async () => {
+   console.log("çalıştım");
+   
+   await Sleep(1000).then(() => router.push("/profile"));
   };
+
 
 
   return (

@@ -4,7 +4,7 @@ import { AppState, AppStateStatus } from "react-native";
 import { useAuth } from "@/context/AuthContext";
 import { performSessionCheck } from "../controllers/SessionController";
 
-const SESSION_CHECK_MIN_INTERVAL_MS = 30_000; // 30 saniyede birden sık check etme
+const SESSION_CHECK_MIN_INTERVAL_MS = 60_000; // 60 saniyede birden sık check etme
 
 export function SessionWatcher() {
   const appState = useRef<AppStateStatus>(AppState.currentState);

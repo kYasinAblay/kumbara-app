@@ -18,51 +18,53 @@ import { useLoading } from "@/context/LoadingContext";
 import Sleep from "@/src/utils/Sleep";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getRememberMe, setRememberMe, saveToken } from "@/src/store/authStore";
 import SessionCookieStore from "@/src/session/SessionCookieStore";
-import { getEmail, saveEmail } from "@/src/store/loginPrefs";
+import { clearEmail, getEmail, getRememberMe, saveEmail, setRememberMe } from "@/src/store/loginPrefs";
 
 export default function LoginPage({ onLogin, onBackToLogin }) {
-  const [loginData, setLoginData] = useState({
-    username: "",
-    password: "",
-  });
+  const [loginData, setLoginData] = useState({ username: "", password: "" });
   const [remember, setRemember] = useState(true);
   const { loading, showLoading, hideLoading } = useLoading();
 
+  useEffect(() => {
+    let alive = true;
+
+    (async () => {
+      const r = await getRememberMe();
+      const savedEmail = await getEmail();
+
+      if (!alive) return;
+
+      setRemember(r);
+
+      if (r && savedEmail) {
+        setLoginData((prev) => ({ ...prev, username: savedEmail }));
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
   const handleNavigateRegister = () => {
     onBackToLogin((prev) => !prev);
   };
 
-  const rememberMe = async (token?: string) => {
-
-    if (remember) {
-      await setRememberMe(true);
-      await saveToken(SessionCookieStore.get()!);
-    } else {
-      await setRememberMe(false);
-    }
-  };
-
-  useEffect(() => {
-  
-    getRememberMe().then((v) => setRemember(v));
-
-    getEmail().then((saved) => {
-      if (saved) {
-        setLoginData({ ...loginData, username: saved });
-      }
-    });
-  }, []);
-
   const handleLogin = async () => {
     try {
-      debugger;
       showLoading();
-      var check = await authRepository.login(loginData);
 
-      if (check.success !== undefined && check.success) {
-        rememberMe();
+      const check = await authRepository.login(loginData);
+
+      if (check?.success) {
+        await setRememberMe(remember);
+
+        if (remember) {
+          await saveEmail(loginData.username.trim());
+        } else {
+          await clearEmail();
+        }
+
         onLogin();
       } else {
         Alert.alert("Hata", "Kullanıcı bulunamadı veya şifre hatalı!");
@@ -70,9 +72,29 @@ export default function LoginPage({ onLogin, onBackToLogin }) {
     } catch (err) {
       console.error(err);
       Alert.alert("Hata", "Giriş işlemi sırasında bir hata oluştu.");
+    } finally {
+      hideLoading();
     }
-    await Sleep(1000).then(hideLoading);
   };
+
+  // const handleLogin = async () => {
+  //   try {
+  //     debugger;
+  //     showLoading();
+  //     var check = await authRepository.login(loginData);
+
+  //     if (check.success !== undefined && check.success) {
+  //       rememberMe();
+  //       onLogin();
+  //     } else {
+  //       Alert.alert("Hata", "Kullanıcı bulunamadı veya şifre hatalı!");
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     Alert.alert("Hata", "Giriş işlemi sırasında bir hata oluştu.");
+  //   }
+  //   await Sleep(1000).then(hideLoading);
+  // };
 
   return (
     <KeyboardAvoidingView
@@ -140,7 +162,13 @@ export default function LoginPage({ onLogin, onBackToLogin }) {
                 />
               </View>
               <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+                style={[{
+    
+   
+    paddingTop: 10,
+    //paddingLeft: 36,
+  
+    backgroundColor: "#fff"},{ flexDirection: "row",justifyContent:"flex-start", alignItems: "center", gap: 10 }]}
               >
                 <Switch value={remember} onValueChange={setRemember} />
                 <Text>Beni hatırla</Text>

@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import React from "react";
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -11,7 +11,11 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { isAdmin } = useAuthorization();
 
-  
+    const cookie = SessionCookieStore.get();
+    if(!cookie)
+      return <Redirect href={cookie ? "/(tabs)" : "/login"} />;
+
+
   return (
     <Tabs
       initialRouteName="profile"
@@ -29,8 +33,7 @@ export default function TabLayout() {
             <IconSymbol size={28} name="box.truck.fill" color={color} />
           ),
         }}
-      />{" "}
-      ,{" "}
+      />
       <Tabs.Screen
         name="index"
         options={{

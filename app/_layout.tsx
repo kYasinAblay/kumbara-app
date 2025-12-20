@@ -17,14 +17,14 @@ import  "@/src/bootstrap";
 import { performSessionCheck } from "@/src/controllers/SessionController";
 import { SessionWatcher } from "@/src/session/SessionWatcher";
 import SessionCookieStore from "@/src/session/SessionCookieStore";
+import { useAuthStore } from "@/src/store/authStore";
 
 export const unstable_settings = {
-  anchor: "(tabs)",
+  anchor: "login",
 };
 
 function AuthGuard() {
   const { loading,logout } = useAuth();
-  const [checked, setChecked] = useState(false);
   const [ok, setOk] = useState(false);
 
   useEffect(() => {
@@ -46,13 +46,13 @@ function AuthGuard() {
 
    const cookie = SessionCookieStore.get();
 
-  // if (!cookie) return <Redirect href="/login" />;
- 
-  if (!loading || !checked) {
+
+  if (loading) {
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <ActivityIndicator size="large" />
     </View>;
   }
+
 
   return (
     <LoadingProvider>
@@ -61,7 +61,7 @@ function AuthGuard() {
           contentStyle: { backgroundColor: "#fff" },
           headerTitleStyle: { fontFamily: "Inter" },
         }}
-        initialRouteName={ !cookie ? "(tabs)" : "login"}
+        initialRouteName={ !cookie ? "login" : "(tabs)"}
       >
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -81,13 +81,15 @@ export default function RootLayout() {
     Inter: require("../assets/fonts/static/Inter_24pt-Regular.ttf"),
     InterBold: require("../assets/fonts/static/Inter_24pt-SemiBold.ttf"),
   });
+  const { status, hydrate } = useAuthStore();
 
 
-  // useEffect(() => {
-  //   bootstrap();
-  // }, []);
+ useEffect(() => {
+    hydrate();
+  }, [hydrate]);
 
-  if (!loaded)
+
+  if (!loaded && status ==="loading")
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />

@@ -1,15 +1,25 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 
-const EMAIL_KEY = "login_email";
+const KEY_EMAIL = "login_email";
+const KEY_REMEMBER = "login_remember";
 
 export async function saveEmail(email: string) {
-  await AsyncStorage.setItem(EMAIL_KEY, email);
+  await SecureStore.setItemAsync(KEY_EMAIL, email);
 }
 
 export async function getEmail() {
-  return await AsyncStorage.getItem(EMAIL_KEY);
+  return SecureStore.getItemAsync(KEY_EMAIL);
 }
 
 export async function clearEmail() {
-  await AsyncStorage.removeItem(EMAIL_KEY);
+  await SecureStore.deleteItemAsync(KEY_EMAIL);
+}
+
+export async function setRememberMe(value: boolean) {
+  await SecureStore.setItemAsync(KEY_REMEMBER, value ? "1" : "0");
+}
+
+export async function getRememberMe() {
+  const v = await SecureStore.getItemAsync(KEY_REMEMBER);
+  return v === "1";
 }

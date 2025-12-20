@@ -31,10 +31,12 @@ import { useMoneyBoxStore } from "@/src/store/moneyBoxStore";
 import { NetworkGuard } from "@/src/core/network/NetworkGuard";
 import { X } from "lucide-react-native";
 import SessionCookieStore from "@/src/session/SessionCookieStore";
-import { router } from "expo-router";
+import { Redirect, router } from "expo-router";
 import { useMoneyBoxes } from "@/hooks/getMoneyBox";
 
 export default function HomeScreen() {
+
+
   const {
     moneyBoxes,
     setMoneyBoxes,
@@ -47,7 +49,7 @@ export default function HomeScreen() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBox, setEditingBox] = useState<MoneyBox | null>(null);
   const [cityModalVisible, setCityModalVisible] = useState(false);
-const { refresh } = useMoneyBoxes();
+  const { refresh } = useMoneyBoxes();
   const { user, loading } = useUser();
 
   // 📦 Load data
