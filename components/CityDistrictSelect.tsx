@@ -5,7 +5,8 @@ import { View,
   Modal,
   FlatList,
   TextInput,
-  StyleSheet, } from "react-native";
+  StyleSheet,
+  KeyboardAvoidingView, } from "react-native";
 
 import cities from "../src/data/cities.json";
 import districts from "../src/data/districts.json";
@@ -28,7 +29,7 @@ export default function CityDistrictSelect({ formData, handleChange,titleVisible
   );
 
   return (
-    <View style={styles.cityZoneInput}>
+    <KeyboardAvoidingView style={styles.cityZoneInput}>
           {/* Şehir */}
       <View style={styles.inputGroup}>
         {titleVisible&&<Text style={styles.label}>Şehir</Text>}
@@ -124,7 +125,7 @@ export default function CityDistrictSelect({ formData, handleChange,titleVisible
           </TouchableOpacity>
         </View>
       </Modal>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     padding: 20,
-    marginTop: 40
+    marginTop: 50
   },
   modalTitle: {
     fontWeight: "bold",
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: "#ddd",
     alignItems: "center",
-    marginTop: 10,
+    marginBottom: 50,
     borderRadius: 8,
   },
 });

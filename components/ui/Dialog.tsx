@@ -73,10 +73,11 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
   content: {
+    flex: 1,
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: 20,
-    width: '85%',
+    width: '100%',
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 6,
@@ -84,13 +85,16 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: 10,
+    top:50,
     right: 10,
     padding: 4,
     opacity: 0.7,
+    zIndex:3
   },
   header: {
-    marginBottom: 12,
+    marginBottom: 0,
+    paddingTop:30
+
   },
   title: {
     fontSize: 18,

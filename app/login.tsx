@@ -14,9 +14,7 @@ export default function LoginScreen() {
   
 
   const handleLogin = async () => {
-   console.log("çalıştım");
-   
-   await Sleep(1000).then(() => router.push("/profile"));
+  await Sleep(1000).then(() => router.push("/profile"));
   };
 
 

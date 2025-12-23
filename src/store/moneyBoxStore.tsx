@@ -12,6 +12,7 @@ interface MoneyBoxState {
   updateMoneyBox: (id: number, boxData: Partial<MoneyBox>) => void;
   removeMoneyBox: (id: number) => void;
   updateAmount: (id: number, newAmount: number) => void;
+   appendMoneyBoxes: (newItems: MoneyBox[]) => void;
 }
 
 export const useMoneyBoxStore = create<MoneyBoxState>((set) => ({
@@ -64,6 +65,10 @@ updateAmount: (id, newAmount) => {
   }));
   EventBus.emit("MONEYBOX_AMOUNT_UPDATED", { id, newAmount });
 },
+
+ appendMoneyBoxes: (newItems: MoneyBox[]) =>
+  set((state) => ({ moneyBoxes: [...state.moneyBoxes, ...newItems] }))
+
 
   //setMoneyBoxes(prev =>
   //   prev.map(box => (box.id === id ? { ...box, is_deleted: true } : box)).filter(box => box.id !== id)

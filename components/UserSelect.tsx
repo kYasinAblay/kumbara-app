@@ -85,7 +85,7 @@ export default function UserSelect({ userId, handleChange }: Props) {
     var response = await UserRepository.add(user);
     var insertedUser = response.user;
 
-    handleChange("id", insertedUser.id!);
+    handleChange("userId", insertedUser.id!);
     handleChange("city", getCityNameById(user.city)!);
 
     insertedUser.phone = insertedUser.password!;
@@ -250,6 +250,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     marginBottom: 20,
+    paddingTop:20
   },
   modalItem: {
     padding: 15,
@@ -260,7 +261,7 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: "#ddd",
     alignItems: "center",
-    marginTop: 10,
+    marginBottom: 50,
     borderRadius: 8,
   },
   TxName: {

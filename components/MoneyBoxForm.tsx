@@ -16,7 +16,7 @@ interface MoneyBoxFormProps {
     city: initialData?.city || '',
     zone: initialData?.zone || '',
     name: initialData?.name || '',
-    amount: initialData?.amount?.toString() || '',
+    amount: initialData?.amount ===0 ? '' : initialData?.amount,
     description: initialData?.description || '',
     userId:initialData?.user_id || ''
   });
@@ -28,6 +28,7 @@ interface MoneyBoxFormProps {
 
   const handleSubmit = () => {
     if (!formData.name  || !formData.zone) return;
+    
     onSubmit({
       id: formData.id,
       city: formData.city,
@@ -41,7 +42,7 @@ interface MoneyBoxFormProps {
   const {isAdmin} = useAuthorization();
   
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView style={styles.scroll} contentContainerStyle={styles.container}  keyboardShouldPersistTaps="handled">
       {/* Name */}
       <View style={styles.field} >
         <Text style={styles.label} >Kumbara Adı</Text>
@@ -90,7 +91,7 @@ interface MoneyBoxFormProps {
           style={styles.input}
           placeholder="0.00"
           keyboardType="numeric"
-          value={formData.amount}
+          value={formData.amount?.toString()}
           onChangeText={(text) => handleChange('amount', text)}
         />
       </View>
@@ -144,10 +145,15 @@ export const MoneyBoxForm = memo(MoneyBoxFormFunc, (prevProps, nextProps) => {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop:10,
     padding: 16
   },
+
+  scroll:{
+    marginTop:10
+ },
   field: {
-    marginBottom: 16,
+    marginBottom: 16
   },
   label: {
     fontSize: 14,
@@ -198,5 +204,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
     fontSize: 15,
-  },
+  }
 });

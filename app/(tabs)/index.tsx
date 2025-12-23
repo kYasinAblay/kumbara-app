@@ -30,13 +30,9 @@ import { getCityNameById } from "@/hooks/getCityNameById";
 import { useMoneyBoxStore } from "@/src/store/moneyBoxStore";
 import { NetworkGuard } from "@/src/core/network/NetworkGuard";
 import { X } from "lucide-react-native";
-import SessionCookieStore from "@/src/session/SessionCookieStore";
-import { Redirect, router } from "expo-router";
 import { useMoneyBoxes } from "@/hooks/getMoneyBox";
 
 export default function HomeScreen() {
-
-
   const {
     moneyBoxes,
     setMoneyBoxes,
@@ -49,17 +45,13 @@ export default function HomeScreen() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBox, setEditingBox] = useState<MoneyBox | null>(null);
   const [cityModalVisible, setCityModalVisible] = useState(false);
-  const { refresh } = useMoneyBoxes();
+  const { refresh, loadMore, loading: mbLoading } = useMoneyBoxes();
   const { user, loading } = useUser();
 
   // 📦 Load data
   useEffect(() => {
     const loadData = async () => {
       refresh();
-      //  const saved = await AsyncStorage.getItem('moneyboxes');
-      console.log("load data in index.tsx", moneyBoxes);
-      setMoneyBoxes(moneyBoxes.filter((box) => !box.is_deleted));
-      //setMoneyBoxes(user.moneyboxes.filter(box => !box.is_deleted));
     };
     loadData();
   }, [user]);
@@ -73,6 +65,7 @@ export default function HomeScreen() {
       description: "",
       zone: "",
       is_deleted: false,
+      user_id: user?.id,
     }));
   };
 
@@ -85,7 +78,6 @@ export default function HomeScreen() {
       zone: "",
       is_deleted: false,
       city: getCityNameById(user?.city),
-      user_id: user?.id,
     });
   }, [user]);
 
@@ -96,7 +88,7 @@ export default function HomeScreen() {
         // id: Date.now().toString(),
         is_deleted: false,
         created_at: new Date().toISOString(),
-        user_id: user?.id,
+        // user_id: user?.id,
       };
 
       addMoneyBox(newBox);
@@ -124,6 +116,8 @@ export default function HomeScreen() {
   };
 
   const handleEdit = (box: MoneyBox) => {
+    console.log("handle edit", box);
+
     setEditingBox(box);
     setIsDialogOpen(true);
   };
@@ -155,13 +149,14 @@ export default function HomeScreen() {
             </View>
           </View>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            {moneyBoxes.length > 1 && <TouchableOpacity
-              onPress={() => setCityModalVisible(true)}
-              style={styles.cityButton}
-            >
-              <Ionicons name="stats-chart" size={20} color="#fff" />
-            </TouchableOpacity>
-            }           
+            {moneyBoxes.length > 1 && (
+              <TouchableOpacity
+                onPress={() => setCityModalVisible(true)}
+                style={styles.cityButton}
+              >
+                <Ionicons name="stats-chart" size={20} color="#fff" />
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => setIsDialogOpen(true)}
@@ -174,10 +169,12 @@ export default function HomeScreen() {
 
         {/* Money Box List */}
         <MoneyBoxList
-          moneyBoxes={moneyBoxes}
+          moneyBoxes={moneyBoxes.filter((box) => !box.is_deleted)}
           onDelete={handleDeleteBox}
           onEdit={handleEdit}
           onUpdateAmount={updateAmount}
+          onEndReached={loadMore}
+          loadingMore={mbLoading}
         />
 
         {/* Dashboard */}
@@ -189,7 +186,13 @@ export default function HomeScreen() {
               {/* <Text style={styles.modalTitle}>Şehirlere Göre</Text> */}
               <TouchableOpacity
                 onPress={() => setCityModalVisible(false)}
-                style={{ alignSelf: "flex-end",top:-10,right:-5,backgroundColor:"red", borderRadius:"50%"}}
+                style={{
+                  alignSelf: "flex-end",
+                  top: -10,
+                  right: -5,
+                  backgroundColor: "red",
+                  borderRadius: "50%",
+                }}
               >
                 <X size={21} color="#f0f0f0f0" />
               </TouchableOpacity>
@@ -308,7 +311,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 12,
     padding: 20,
-    position:"relative"
+    position: "relative",
   },
 
   // modalTitle: {

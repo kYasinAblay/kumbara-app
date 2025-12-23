@@ -26,7 +26,7 @@ export function Dashboard({ moneyBoxes }: DashboardProps) {
             <Text style={styles.cardTitle}>Total Savings</Text>
           </View>
           <Text style={styles.cardValue}>₺{totalAmount.toFixed(2)}</Text>
-          <Text style={styles.cardSubtitle}>Across all money boxes</Text>
+          <Text style={styles.cardSubtitle}>Bölgelere göre bütün kumbaralar</Text>
         </View>
 
         <View style={styles.card}>
@@ -55,7 +55,7 @@ export function Dashboard({ moneyBoxes }: DashboardProps) {
 }
 
 const styles = StyleSheet.create({
-  container: { marginBottom: 24 },
+  container: { marginBottom: 25 },
   summaryContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
